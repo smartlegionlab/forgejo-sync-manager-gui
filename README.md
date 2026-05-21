@@ -1,0 +1,2 @@
+# forgejo-sync-manager-gui
+
