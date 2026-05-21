@@ -4,7 +4,7 @@ from PyQt6.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QLabel, QPushButt
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QFont
 
-from core.config import ConfigManager
+from forgejo_sync_manager_core.core.config import ConfigManager
 from ui.theme import ModernDarkTheme
 
 
@@ -31,7 +31,7 @@ class AboutDialog(QDialog):
         title.setStyleSheet(f"color: {ModernDarkTheme.PRIMARY_COLOR};")
         layout.addWidget(title)
 
-        version = QLabel(f"Version v1.0.1")
+        version = QLabel(f"Version v1.0.2")
         version.setAlignment(Qt.AlignmentFlag.AlignCenter)
         version.setStyleSheet(f"color: {ModernDarkTheme.TEXT_SECONDARY};")
         layout.addWidget(version)

@@ -8,7 +8,7 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtCore import Qt, QThread, pyqtSignal, QTimer
 from PyQt6.QtGui import QFont
 
-from core.sync_manager_gui import GUISyncManager
+from forgejo_sync_manager_core.core.sync_manager_gui import GUISyncManager
 from ui.theme import ModernDarkTheme
 
 

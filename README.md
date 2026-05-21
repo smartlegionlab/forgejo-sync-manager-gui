@@ -1,4 +1,4 @@
-# forgejo-sync-manager-gui <sup>v1.0.1</sup>
+# forgejo-sync-manager-gui <sup>v1.0.2</sup>
 
 Desktop GUI application for batch synchronization of Forgejo repositories to local machine.
 

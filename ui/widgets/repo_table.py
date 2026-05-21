@@ -62,7 +62,6 @@ class RepoTable(QWidget):
         self.table.setHorizontalHeaderLabels(["#", "Repository", "Type", "Size", "Status"])
         self.table.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
         self.table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
-        self.table.setAlternatingRowColors(True)
         self.table.verticalHeader().setVisible(False)
         self.table.doubleClicked.connect(self.on_double_click)
         self.table.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)

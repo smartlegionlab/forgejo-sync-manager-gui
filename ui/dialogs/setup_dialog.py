@@ -9,8 +9,8 @@ from PyQt6.QtCore import Qt, QThread, pyqtSignal
 from PyQt6.QtGui import QFont
 
 import requests
-from core.auth import ForgejoAuth
-from core.api_client import ForgejoAPIClient
+from forgejo_sync_manager_core.core.auth import ForgejoAuth
+from forgejo_sync_manager_core.core.api_client import ForgejoAPIClient
 from ui.theme import ModernDarkTheme
 
 
