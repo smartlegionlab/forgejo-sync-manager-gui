@@ -31,7 +31,7 @@ class AboutDialog(QDialog):
         title.setStyleSheet(f"color: {ModernDarkTheme.PRIMARY_COLOR};")
         layout.addWidget(title)
 
-        version = QLabel(f"Version {ConfigManager.VERSION}")
+        version = QLabel(f"Version v1.0.1")
         version.setAlignment(Qt.AlignmentFlag.AlignCenter)
         version.setStyleSheet(f"color: {ModernDarkTheme.TEXT_SECONDARY};")
         layout.addWidget(version)
@@ -58,6 +58,12 @@ class AboutDialog(QDialog):
 
         links_layout = QVBoxLayout()
         links_layout.setSpacing(8)
+
+        core_link = QLabel('<a href="https://github.com/smartlegionlab/forgejo-sync-manager-core">Core Library</a>')
+        core_link.setOpenExternalLinks(True)
+        core_link.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        core_link.setStyleSheet(f"color: {ModernDarkTheme.PRIMARY_COLOR}; font-size: 12px;")
+        links_layout.addWidget(core_link)
 
         repo_link = QLabel('<a href="https://github.com/smartlegionlab/forgejo-sync-manager-gui">GitHub Repository</a>')
         repo_link.setOpenExternalLinks(True)

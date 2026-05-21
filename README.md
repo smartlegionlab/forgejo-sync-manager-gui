@@ -1,4 +1,4 @@
-# forgejo-sync-manager-gui <sup>v0.1.2</sup>
+# forgejo-sync-manager-gui <sup>v1.0.1</sup>
 
 Desktop GUI application for batch synchronization of Forgejo repositories to local machine.
 
@@ -138,3 +138,26 @@ When starting any sync operation, a dialog appears showing:
 Copyright (©) 2026, [Alexander Suvorov](https://github.com/smartlegionlab)
 All rights reserved.
 
+---
+
+## Powered By
+
+This application is built on top of:
+
+| Library                                                                                      | Description                                                   | Version |
+|----------------------------------------------------------------------------------------------|---------------------------------------------------------------|---------|
+| **[forgejo-sync-manager-core](https://github.com/smartlegionlab/forgejo-sync-manager-core)** | Universal core library for Forgejo repository synchronization | v1.0.0  |
+| **PyQt6**                                                                                    | Python bindings for Qt6 framework                             | ≥6.5.0  |
+| **requests**                                                                                 | HTTP library for Python                                       | ≥2.31.0 |
+
+## Related Projects
+
+| Project                       | Description                                      | Repository                                                            |
+|-------------------------------|--------------------------------------------------|-----------------------------------------------------------------------|
+| **forgejo-sync-manager-cli**  | Command-line interface for batch synchronization | [GitHub](https://github.com/smartlegionlab/forgejo-sync-manager-cli)  |
+| **forgejo-sync-manager-core** | Universal core library                           | [GitHub](https://github.com/smartlegionlab/forgejo-sync-manager-core) |
+
+## See Also
+
+- **[forgejo-sync-manager-cli](https://github.com/smartlegionlab/forgejo-sync-manager-cli)** - If you prefer command-line interface
+- **[forgejo-sync-manager-core](https://github.com/smartlegionlab/forgejo-sync-manager-core)** - Core library for custom implementations
