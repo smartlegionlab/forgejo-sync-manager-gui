@@ -136,7 +136,7 @@ class SetupDialog(QDialog):
         button_layout.setSpacing(10)
         button_layout.addStretch()
 
-        self.save_btn = QPushButton("Save & Continue")
+        self.save_btn = QPushButton("Save and Continue")
         self.save_btn.setMinimumHeight(40)
         self.save_btn.setMinimumWidth(150)
         self.save_btn.clicked.connect(self.save_and_test)
@@ -208,7 +208,7 @@ class SetupDialog(QDialog):
 
     def on_test_finished(self, success: bool, message: str, auth, user_info):
         self.save_btn.setEnabled(True)
-        self.save_btn.setText("Save & Continue")
+        self.save_btn.setText("Save and Continue")
 
         if success:
             config = {
@@ -220,8 +220,8 @@ class SetupDialog(QDialog):
 
             reply = QMessageBox.question(
                 self,
-                "Configuration Saved",
-                f"Configuration saved!\n\n"
+                "Save this configuration?",
+                f"Save this configuration?\n\n"
                 f"Connected as: @{auth.username}\n\n"
                 f"Restart application to load your repositories?",
                 QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No

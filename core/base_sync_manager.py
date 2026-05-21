@@ -3,10 +3,11 @@
 import subprocess
 import shutil
 from pathlib import Path
+from abc import ABC, abstractmethod
 from core.auth import ForgejoAuth
 
 
-class SyncManager:
+class BaseSyncManager(ABC):
     def __init__(self, auth: ForgejoAuth):
         self.auth = auth
         self.base_dir = Path.home() / "forgejo-sync-manager" / auth.username
@@ -76,3 +77,23 @@ class SyncManager:
     def repo_exists_locally(self, repo_name: str) -> bool:
         repo_path = self.repos_dir / repo_name
         return repo_path.exists() and (repo_path / '.git').exists()
+
+    @abstractmethod
+    def sync_all_repositories(self, repos):
+        pass
+
+    @abstractmethod
+    def sync_updates_only(self, repos_to_update):
+        pass
+
+    @abstractmethod
+    def reclone_all_repositories(self, repos):
+        pass
+
+    @abstractmethod
+    def check_repo_needs_update(self, repo):
+        pass
+
+    @abstractmethod
+    def check_updates(self, repos):
+        pass

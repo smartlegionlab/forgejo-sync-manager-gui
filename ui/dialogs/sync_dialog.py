@@ -8,7 +8,7 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtCore import Qt, QThread, pyqtSignal, QTimer
 from PyQt6.QtGui import QFont
 
-from core.sync_manager import SyncManager
+from core.sync_manager_gui import GUISyncManager
 from ui.theme import ModernDarkTheme
 
 
@@ -17,7 +17,7 @@ class SyncWorker(QThread):
     finished_signal = pyqtSignal(dict)
     error = pyqtSignal(str)
 
-    def __init__(self, sync_manager: SyncManager, repositories: List[dict], operation: str = "sync"):
+    def __init__(self, sync_manager: GUISyncManager, repositories: List[dict], operation: str = "sync"):
         super().__init__()
         self.sync_manager = sync_manager
         self.repositories = repositories
@@ -66,7 +66,7 @@ class SyncWorker(QThread):
 class SyncDialog(QDialog):
     repo_status_updated = pyqtSignal(str, bool)
 
-    def __init__(self, sync_manager: SyncManager, repositories: List[dict], operation: str = "sync", parent=None):
+    def __init__(self, sync_manager: GUISyncManager, repositories: List[dict], operation: str = "sync", parent=None):
         super().__init__(parent)
         self.sync_manager = sync_manager
         self.repositories = repositories

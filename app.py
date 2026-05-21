@@ -16,7 +16,6 @@ def main():
     ModernDarkTheme.apply(app)
 
     icon_path = Path(__file__).parent / "data" / "icons" / "icon.jpeg"
-    print(icon_path)
     if icon_path.exists():
         app.setWindowIcon(QIcon(str(icon_path)))
 
@@ -28,4 +27,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

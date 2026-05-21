@@ -13,7 +13,7 @@ from PyQt6.QtGui import QFont, QAction, QKeySequence
 from core.config import ConfigManager
 from core.auth import ForgejoAuth
 from core.api_client import ForgejoAPIClient
-from core.sync_manager import SyncManager
+from core.sync_manager_gui import GUISyncManager
 
 from ui.theme import ModernDarkTheme
 from ui.widgets.repo_table import RepoTable
@@ -52,7 +52,7 @@ class LoadWorker(QThread):
             repositories = client.get_user_repos()
 
             self.progress.emit("Creating sync manager...", 80)
-            sync_manager = SyncManager(auth)
+            sync_manager = GUISyncManager(auth)
 
             self.progress.emit("Checking local copies...", 90)
             for repo in repositories:
@@ -86,8 +86,8 @@ class MainWindow(QMainWindow):
         self.animation_timer = None
         self.animation_counter = 0
 
-        self.setWindowTitle(f"{ConfigManager.APP_FULL_NAME} v{ConfigManager.VERSION}")
-        self.setMinimumSize(1000, 700)
+        self.setWindowTitle(f"{ConfigManager.APP_FULL_NAME}")
+        self.setMinimumSize(670, 480)
 
         self.setup_ui()
         self.setup_menu()
@@ -538,7 +538,7 @@ class MainWindow(QMainWindow):
         self.client = client
         self.repositories = repositories
         self.user_info = {"login": auth.username}
-        self.sync_manager = SyncManager(auth)
+        self.sync_manager = GUISyncManager(auth)
 
         self.repo_table.set_repositories(self.repositories)
 

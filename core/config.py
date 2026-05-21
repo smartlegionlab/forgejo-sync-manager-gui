@@ -8,7 +8,7 @@ class ConfigManager:
     APP_NAME = "forgejo-sync-manager"
     APP_FULL_NAME = "Forgejo Sync Manager"
     GITHUB_URL = "https://github.com/smartlegionlab/forgejo-sync-manager"
-    VERSION = "0.1.0"
+    VERSION = "0.1.2"
 
     def __init__(self):
         self.app_dir = None
