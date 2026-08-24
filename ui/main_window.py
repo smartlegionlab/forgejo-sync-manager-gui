@@ -352,9 +352,33 @@ class MainWindow(QMainWindow):
         self.reclone_btn.setEnabled(False)
         self.reclone_btn.setToolTip("Delete all local copies and clone again from server")
 
+        self.delete_all_btn = QPushButton("🗑️ Delete All")
+        self.delete_all_btn.clicked.connect(self.delete_all_repositories)
+        self.delete_all_btn.setEnabled(False)
+        self.delete_all_btn.setToolTip("Delete ALL local repository copies")
+        self.delete_all_btn.setStyleSheet(f"""
+                QPushButton {{
+                    background-color: #5a1a1a;
+                    color: white;
+                    border: 1px solid #8a2a2a;
+                    border-radius: 6px;
+                    padding: 8px 16px;
+                    font-size: 14px;
+                    min-height: 36px;
+                }}
+                QPushButton:hover {{
+                    background-color: #7a2a2a;
+                }}
+                QPushButton:disabled {{
+                    background-color: #3a3a3a;
+                    color: #808080;
+                }}
+            """)
+
         layout.addWidget(self.sync_btn)
         layout.addWidget(self.update_btn)
         layout.addWidget(self.reclone_btn)
+        layout.addWidget(self.delete_all_btn)
         layout.addStretch()
 
         return widget
@@ -378,6 +402,11 @@ class MainWindow(QMainWindow):
         reclone_action.setShortcut(QKeySequence("Ctrl+Shift+R"))
         reclone_action.triggered.connect(self.reclone_all)
         file_menu.addAction(reclone_action)
+
+        delete_all_action = QAction("&Delete All Repositories", self)
+        delete_all_action.setShortcut(QKeySequence("Ctrl+Shift+D"))
+        delete_all_action.triggered.connect(self.delete_all_repositories)
+        file_menu.addAction(delete_all_action)
 
         file_menu.addSeparator()
 
@@ -451,6 +480,7 @@ class MainWindow(QMainWindow):
             ("Ctrl+Shift+S", "Sync All Repositories"),
             ("Ctrl+Shift+U", "Update Only Existing Repositories"),
             ("Ctrl+Shift+R", "Re-clone All Repositories"),
+            ("Ctrl+Shift+D", "Delete All Local Repositories"),
             ("Ctrl+Q", "Exit Application"),
             ("", ""),
             ("Tools", ""),
@@ -548,6 +578,7 @@ class MainWindow(QMainWindow):
         self.sync_btn.setEnabled(True)
         self.update_btn.setEnabled(True)
         self.reclone_btn.setEnabled(True)
+        self.delete_all_btn.setEnabled(True)
 
         self.hide_preloader()
         self.status_label.setText(f"Ready - {len(self.repositories)} repositories loaded")
@@ -866,6 +897,58 @@ class MainWindow(QMainWindow):
         from ui.dialogs.desktop_entry_dialog import DesktopEntryDialog
         dialog = DesktopEntryDialog(self)
         dialog.exec()
+
+    def delete_all_repositories(self):
+        if not self.sync_manager or not self.repositories:
+            return
+
+        local_repos = [r for r in self.repositories if self.check_local_exists(r.get('name', ''))]
+
+        if not local_repos:
+            QMessageBox.information(self, "Info", "No local repositories to delete")
+            return
+
+        reply = QMessageBox.warning(
+            self,
+            "⚠️ Confirm Delete All",
+            f"DELETE ALL LOCAL REPOSITORIES?\n\n"
+            f"📁 Local copies to delete: {len(local_repos)} repositories\n"
+            f"💾 Total disk space: {self._calculate_total_size(local_repos)}\n\n"
+            f"⚠️ This action CANNOT BE UNDONE!\n"
+            f"All local changes will be lost permanently.",
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+            QMessageBox.StandardButton.No
+        )
+
+        if reply == QMessageBox.StandardButton.Yes:
+            from ui.dialogs.delete_dialog import DeleteAllDialog
+            dialog = DeleteAllDialog(self.sync_manager, local_repos, self)
+            dialog.repo_status_updated.connect(self.update_repo_status_in_table)
+            dialog.exec()
+
+    def _calculate_total_size(self, repositories: list) -> str:
+        total_size = 0
+        for repo in repositories:
+            repo_name = repo.get('name', '')
+            repo_path = self.sync_manager.repos_dir / repo_name
+            if repo_path.exists():
+                total_size += self._get_folder_size(repo_path)
+
+        for unit in ['B', 'KB', 'MB', 'GB']:
+            if total_size < 1024:
+                return f"{total_size:.1f} {unit}"
+            total_size /= 1024
+        return f"{total_size:.1f} TB"
+
+    def _get_folder_size(self, path) -> int:
+        total = 0
+        try:
+            for entry in path.rglob('*'):
+                if entry.is_file():
+                    total += entry.stat().st_size
+        except Exception:
+            pass
+        return total
 
     def closeEvent(self, event):
         if self.load_worker and self.load_worker.isRunning():
