@@ -1,4 +1,4 @@
-# forgejo-sync-manager-gui <sup>v1.0.2</sup>
+# forgejo-sync-manager-gui <sup>v1.0.3</sup>
 
 Desktop GUI application for batch synchronization of Forgejo repositories to local machine.
 
@@ -30,6 +30,7 @@ Desktop GUI application for batch synchronization of Forgejo repositories to loc
 - Visual repository list with search and filter capabilities
 - Full repository recloning option
 - Local repository deletion
+- Batch delete all local repositories with progress tracking
 - One-click open in browser or local folder
 - Persistent configuration storage
 - Multi-repository selection for batch operations
@@ -84,6 +85,7 @@ Configuration is stored in `~/forgejo-sync-manager/config.json`
   - `Sync All` - Clone missing repositories and update all local copies
   - `Update Only` - Update only already cloned repositories
   - `Re-clone All` - Delete all local copies and clone again from server
+  - `Delete All` - Delete ALL local repository copies with progress tracking
 
 ### Context Menu (Right-click on repository)
 
@@ -102,6 +104,7 @@ Configuration is stored in `~/forgejo-sync-manager/config.json`
 | `Ctrl+Shift+S` | Sync All Repositories             |
 | `Ctrl+Shift+U` | Update Only Existing Repositories |
 | `Ctrl+Shift+R` | Re-clone All Repositories         |
+| `Ctrl+Shift+D` | Delete All Local Repositories     |
 | `Ctrl+Q`       | Exit Application                  |
 | `Ctrl+,`       | Open Settings                     |
 | `Ctrl+/`       | Show Keyboard Shortcuts           |
@@ -120,6 +123,15 @@ When starting any sync operation, a dialog appears showing:
 - Operation log with timestamps
 - Summary statistics upon completion
 
+## Delete All Dialog
+
+When clicking the "Delete All" button, a dialog appears showing:
+- Real-time progress bar
+- Current repository being deleted
+- Operation log with timestamps
+- Summary statistics upon completion (deleted/not found/failed)
+- Cancel option to stop the operation
+
 ## How It Works
 
 1. **Authentication**: Token-based authentication via Forgejo API
@@ -131,16 +143,13 @@ When starting any sync operation, a dialog appears showing:
 
 ![forgejo-sync-manager-gui](https://github.com/smartlegionlab/forgejo-sync-manager-gui/blob/master/data/images/logo.png)
 
-## License
-
-[BSD 3-Clause License](https://github.com/smartlegionlab/forgejo-sync-manager-gui/blob/master/LICENSE)
-
-Copyright (©) 2026, [Alexander Suvorov](https://github.com/smartlegionlab)
-All rights reserved.
-
 ---
 
-## Powered By
+## Ecosystem
+
+This project is part of the [Repository Management Ecosystem](https://smartlegionlab.com/ecosystems.html)
+
+### Powered By
 
 This application is built on top of:
 
@@ -150,7 +159,7 @@ This application is built on top of:
 | **PyQt6**                                                                                    | Python bindings for Qt6 framework                             | ≥6.5.0  |
 | **requests**                                                                                 | HTTP library for Python                                       | ≥2.31.0 |
 
-## Related Projects
+### Related Projects
 
 | Project                       | Description                                      | Repository                                                            |
 |-------------------------------|--------------------------------------------------|-----------------------------------------------------------------------|
@@ -161,3 +170,13 @@ This application is built on top of:
 
 - **[forgejo-sync-manager-cli](https://github.com/smartlegionlab/forgejo-sync-manager-cli)** - If you prefer command-line interface
 - **[forgejo-sync-manager-core](https://github.com/smartlegionlab/forgejo-sync-manager-core)** - Core library for custom implementations
+
+---
+
+## License
+
+[BSD 3-Clause License](https://github.com/smartlegionlab/forgejo-sync-manager-gui/blob/master/LICENSE)
+
+Copyright (©) 2026, [Alexander Suvorov](https://github.com/smartlegionlab)
+All rights reserved.
+

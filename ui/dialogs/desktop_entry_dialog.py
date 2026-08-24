@@ -184,13 +184,12 @@ class DesktopEntryDialog(QDialog):
             return False, str(e)
 
     def generate_desktop_content(self):
-        from forgejo_sync_manager_core.core.config import ConfigManager
         python_exec = sys.executable
 
         exec_line = f'"{python_exec}" "{self.app_path}"'
 
         content = f"""[Desktop Entry]
-Version=v1.0.2
+Version=v1.0.3
 Type=Application
 Name={self.app_name}
 Comment=A powerful desktop application for managing Forgejo repositories with intelligent synchronization
