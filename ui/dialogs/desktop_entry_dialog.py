@@ -189,7 +189,7 @@ class DesktopEntryDialog(QDialog):
         exec_line = f'"{python_exec}" "{self.app_path}"'
 
         content = f"""[Desktop Entry]
-Version=v1.0.3
+Version=v1.0.5
 Type=Application
 Name={self.app_name}
 Comment=A powerful desktop application for managing Forgejo repositories with intelligent synchronization

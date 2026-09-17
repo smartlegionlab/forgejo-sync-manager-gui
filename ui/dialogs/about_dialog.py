@@ -65,7 +65,7 @@ class AboutDialog(QDialog):
         title.setStyleSheet(f"color: {ModernDarkTheme.PRIMARY_COLOR};")
         layout.addWidget(title)
 
-        version = QLabel("Version v1.0.3")
+        version = QLabel("Version v1.0.5")
         version.setAlignment(Qt.AlignmentFlag.AlignCenter)
         version.setStyleSheet(f"color: {ModernDarkTheme.TEXT_SECONDARY}; font-size: 12px;")
         layout.addWidget(version)
