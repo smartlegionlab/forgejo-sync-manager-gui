@@ -1,6 +1,7 @@
 # Copyright (©) 2026, Alexander Suvorov. All rights reserved.
 import os
 import subprocess
+from pathlib import Path
 
 from PyQt6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
@@ -20,6 +21,8 @@ from ui.widgets.repo_table import RepoTable
 from ui.dialogs.setup_dialog import SetupDialog
 from ui.dialogs.sync_dialog import SyncDialog
 from ui.dialogs.about_dialog import AboutDialog
+
+VERSION = "1.0.4"
 
 
 class LoadWorker(QThread):
@@ -86,7 +89,7 @@ class MainWindow(QMainWindow):
         self.animation_timer = None
         self.animation_counter = 0
 
-        self.setWindowTitle(f"{ConfigManager.APP_FULL_NAME}")
+        self.setWindowTitle(f"{ConfigManager.APP_FULL_NAME} v{VERSION}")
         self.setMinimumSize(670, 480)
 
         self.setup_ui()
@@ -126,37 +129,6 @@ class MainWindow(QMainWindow):
         self.setStatusBar(self.status_bar)
         self.status_label = QLabel("Ready")
         self.status_bar.addWidget(self.status_label)
-
-    def delete_local_repositories(self, repositories: list):
-        if not repositories:
-            return
-
-        reply = QMessageBox.question(
-            self,
-            "Confirm Delete",
-            f"Delete local copies of {len(repositories)} repositories?\n\nThis action cannot be undone!",
-            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
-        )
-
-        if reply != QMessageBox.StandardButton.Yes:
-            return
-
-        deleted_count = 0
-        for repo in repositories:
-            repo_name = repo.get('name', '')
-            repo_path = self.sync_manager.repos_dir / repo_name
-
-            if repo_path.exists():
-                try:
-                    import shutil
-                    shutil.rmtree(repo_path)
-                    deleted_count += 1
-                    self.update_repo_status_in_table(repo_name, False)
-                except Exception as e:
-                    print(f"Error deleting {repo_name}: {e}")
-
-        if deleted_count > 0:
-            QMessageBox.information(self, "Success", f"Deleted {deleted_count} local copies")
 
     def open_in_browser(self, url: str):
         import webbrowser
@@ -898,6 +870,37 @@ class MainWindow(QMainWindow):
         dialog = DesktopEntryDialog(self)
         dialog.exec()
 
+    def delete_local_repositories(self, repositories: list):
+        if not repositories:
+            return
+
+        reply = QMessageBox.question(
+            self,
+            "Confirm Delete",
+            f"Delete local copies of {len(repositories)} repositories?\n\nThis action cannot be undone!",
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
+        )
+
+        if reply != QMessageBox.StandardButton.Yes:
+            return
+
+        deleted_count = 0
+        for repo in repositories:
+            repo_name = repo.get('name', '')
+            repo_path = self.sync_manager.repos_dir / repo_name
+
+            if repo_path.exists():
+                try:
+                    import shutil
+                    shutil.rmtree(repo_path)
+                    deleted_count += 1
+                    self.update_repo_status_in_table(repo_name, False)
+                except Exception as e:
+                    print(f"Error deleting {repo_name}: {e}")
+
+        if deleted_count > 0:
+            QMessageBox.information(self, "Success", f"Deleted {deleted_count} local copies")
+
     def delete_all_repositories(self):
         if not self.sync_manager or not self.repositories:
             return
@@ -931,8 +934,11 @@ class MainWindow(QMainWindow):
         for repo in repositories:
             repo_name = repo.get('name', '')
             repo_path = self.sync_manager.repos_dir / repo_name
-            if repo_path.exists():
+            if repo_path.is_dir():
                 total_size += self._get_folder_size(repo_path)
+
+        if total_size == 0:
+            return "0.0 B"
 
         for unit in ['B', 'KB', 'MB', 'GB']:
             if total_size < 1024:
@@ -940,14 +946,24 @@ class MainWindow(QMainWindow):
             total_size /= 1024
         return f"{total_size:.1f} TB"
 
-    def _get_folder_size(self, path) -> int:
+    def _get_folder_size(self, path: Path) -> int:
         total = 0
-        try:
-            for entry in path.rglob('*'):
-                if entry.is_file():
-                    total += entry.stat().st_size
-        except Exception:
-            pass
+        stack = [path]
+
+        while stack:
+            current = stack.pop()
+            try:
+                with os.scandir(current) as it:
+                    for entry in it:
+                        try:
+                            if entry.is_file(follow_symlinks=False):
+                                total += entry.stat(follow_symlinks=False).st_size
+                            elif entry.is_dir(follow_symlinks=False):
+                                stack.append(entry.path)
+                        except OSError:
+                            continue
+            except OSError:
+                continue
         return total
 
     def closeEvent(self, event):
