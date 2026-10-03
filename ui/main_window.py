@@ -89,7 +89,7 @@ class MainWindow(QMainWindow):
         self.animation_timer = None
         self.animation_counter = 0
 
-        self.setWindowTitle(f"{ConfigManager.APP_FULL_NAME} v{VERSION}")
+        self.setWindowTitle(f"{ConfigManager.APP_FULL_NAME}")
         self.setMinimumSize(670, 480)
 
         self.setup_ui()

@@ -1,4 +1,4 @@
-# forgejo-sync-manager-gui <sup>v1.0.5</sup>
+# forgejo-sync-manager-gui <sup>v1.0.6</sup>
 
 Desktop GUI application for batch synchronization of Forgejo repositories to local machine.
 
@@ -44,14 +44,146 @@ Desktop GUI application for batch synchronization of Forgejo repositories to loc
 
 ## Installation
 
+There are **two independent ways** to use this application:
+
+- **Run from source** — clone the repo, create a virtual environment, launch manually. Nothing is installed system-wide.
+- **Install system-wide** — one command creates a menu entry. Desktop shortcut is opt-in.
+
+Choose one. They are not meant to be combined.
+
+### Option 1 — Run from Source (no system install)
+
+Use this if you just want to try the app or run it manually from a folder.
+
+**Requirements:** Python 3.8+, git.
+
 ```bash
+# 1. Clone the repository
 git clone https://github.com/smartlegionlab/forgejo-sync-manager-gui.git
 cd forgejo-sync-manager-gui
-python -m venv venv
+
+# 2. Create a virtual environment
+python3 -m venv venv
+
+# 3. Activate it
 source venv/bin/activate
+
+# 4. Install dependencies
 pip install -r requirements.txt
+
+# 5. Launch the app
 python app.py
 ```
+
+To run it again later:
+
+```bash
+cd forgejo-sync-manager-gui
+source venv/bin/activate
+python app.py
+```
+
+Nothing is installed system-wide. The app runs from this folder.
+
+### Option 2 — Install System-Wide (recommended)
+
+Use this if you want the app in your application menu.
+
+**Requirements:** Python 3.8+, git, curl, Linux desktop with `.desktop` support.
+
+#### One-command install
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/smartlegionlab/forgejo-sync-manager-gui/master/install.sh | bash
+```
+
+**What the installer does:**
+
+1. Downloads the source code from GitHub.
+2. Installs the application to `~/.local/share/forgejo-sync-manager-gui/`.
+   No root, no sudo — everything lives inside your home directory.
+3. Creates a dedicated Python virtual environment at
+   `~/.local/share/forgejo-sync-manager-gui/venv/` and installs dependencies into it.
+4. Registers the app in your desktop environment by creating
+   `~/.local/share/applications/forgejo-sync-manager-gui.desktop`.
+5. Refreshes the desktop database so the menu entry appears without a full re-login on most systems.
+
+**Launch after install:**
+- Application menu → **Forgejo Sync Manager**
+
+**Desktop shortcut (opt-in):**
+
+By default, no Desktop shortcut is created. This is intentional — on GNOME
+(default on Ubuntu), desktop icons are hidden by default, which would make
+a shortcut invisible and confusing.
+
+To also create a Desktop shortcut during install, pass the
+`SPM_CREATE_DESKTOP_SHORTCUT=1` environment variable to **bash** — the
+second command in the pipeline:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/smartlegionlab/forgejo-sync-manager-gui/master/install.sh | SPM_CREATE_DESKTOP_SHORTCUT=1 bash
+```
+
+Or export it first, then run the normal installer:
+
+```bash
+export SPM_CREATE_DESKTOP_SHORTCUT=1
+curl -fsSL https://raw.githubusercontent.com/smartlegionlab/forgejo-sync-manager-gui/master/install.sh | bash
+```
+
+> **Note:** Writing `SPM_CREATE_DESKTOP_SHORTCUT=1 curl ... | bash` does
+> **not** work — in a shell pipeline, an environment variable prefix applies
+> only to the command on the **left** side of the `|`. The variable never
+> reaches `bash`, which is on the right side. Pass it to `bash` directly, or
+> `export` it beforehand.
+
+**Notes:**
+- On GNOME (default on Ubuntu), desktop icons may be hidden by default. Enable Desktop Icons in GNOME Tweaks to see the shortcut.
+- The Desktop shortcut may show an **"Unsecured Application Launcher"** warning. Right-click → **Allow Launching** (one-time action).
+- If the menu entry does not appear immediately, log out and back in.
+
+#### Alternative — install from a cloned repo
+
+If you already cloned the repository, you can run the installer locally:
+
+```bash
+cd forgejo-sync-manager-gui
+./install.sh
+```
+
+It works the same way. It ignores any local `venv/` and creates its own under `~/.local/share/forgejo-sync-manager-gui/venv/`.
+
+### Uninstall
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/smartlegionlab/forgejo-sync-manager-gui/master/uninstall.sh | bash
+```
+
+**What the uninstaller removes:**
+- `~/.local/share/forgejo-sync-manager-gui/` — the application and its venv
+- `~/.local/share/applications/forgejo-sync-manager-gui.desktop` — the menu entry
+- `~/Desktop/forgejo-sync-manager-gui.desktop` — the Desktop shortcut (if present)
+
+**What the uninstaller never touches:**
+- `~/forgejo-sync-manager/config.json` — your connection settings.
+  It is your data. Only you decide what to do with it.
+
+If you want to remove your configuration as well, run after uninstall:
+
+```bash
+rm -rf ~/forgejo-sync-manager
+```
+
+### Installation Paths
+
+| Item                       | Path                                                                  |
+|----------------------------|-----------------------------------------------------------------------|
+| Application files          | `~/.local/share/forgejo-sync-manager-gui/`                            |
+| Virtual environment        | `~/.local/share/forgejo-sync-manager-gui/venv/`                       |
+| Application menu entry     | `~/.local/share/applications/forgejo-sync-manager-gui.desktop`        |
+| Desktop shortcut (opt-in)  | `~/Desktop/forgejo-sync-manager-gui.desktop`                          |
+| User data (config)         | `~/forgejo-sync-manager/config.json`                                  |
 
 ## Usage
 
@@ -94,8 +226,6 @@ Configuration is stored in `~/forgejo-sync-manager/config.json`
 - `Delete Local` - Remove local repository folder (for local repositories only)
 - `Open Local Folder` - Open repository folder in file manager (single selection)
 - `Open in Browser` - Open repository on Forgejo web interface (single selection)
-
-### Keyboard Shortcuts
 
 ### Keyboard Shortcuts
 
@@ -155,7 +285,7 @@ This application is built on top of:
 
 | Library                                                                                      | Description                                                   | Version |
 |----------------------------------------------------------------------------------------------|---------------------------------------------------------------|---------|
-| **[forgejo-sync-manager-core](https://github.com/smartlegionlab/forgejo-sync-manager-core)** | Universal core library for Forgejo repository synchronization | v1.0.0  |
+| **[forgejo-sync-manager-core](https://github.com/smartlegionlab/forgejo-sync-manager-core)** | Universal core library for Forgejo repository synchronization | v1.0.2  |
 | **PyQt6**                                                                                    | Python bindings for Qt6 framework                             | ≥6.5.0  |
 | **requests**                                                                                 | HTTP library for Python                                       | ≥2.31.0 |
 
