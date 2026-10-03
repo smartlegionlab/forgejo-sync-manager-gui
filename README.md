@@ -1,4 +1,4 @@
-# forgejo-sync-manager-gui <sup>v1.0.6</sup>
+# forgejo-sync-manager-gui <sup>v1.0.7</sup>
 
 Desktop GUI application for batch synchronization of Forgejo repositories to local machine.
 
@@ -40,7 +40,7 @@ Desktop GUI application for batch synchronization of Forgejo repositories to loc
 - Python 3.8+
 - Git
 - Forgejo server with API access
-- PyQt6
+- PyQt5
 
 ## Installation
 
@@ -277,29 +277,55 @@ When clicking the "Delete All" button, a dialog appears showing:
 
 ## Ecosystem
 
-This project is part of the [Repository Management Ecosystem](https://smartlegionlab.com/ecosystems.html)
+This project is part of the [Repository Management Ecosystem](https://smartlegionlab.github.io/ecosystems/repository-management-ecosystem.html) — a family of applications and libraries for GitHub / Forgejo automation: sync, backup, and SSH management.
+
+### Applications
+
+| Application                                                                                              | Description                                                                                 |
+|----------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------|
+| **[Smart Repository Manager GUI](https://github.com/smartlegionlab/smart-repository-manager-gui)**       | GitHub repository management with visual interface, multi-user support, batch operations    |
+| **[Smart Repository Manager CLI](https://github.com/smartlegionlab/smart-repository-manager-cli)**       | GitHub repository management from the command line                                          |
+| **[Forgejo Sync Manager GUI](https://github.com/smartlegionlab/forgejo-sync-manager-gui)** (this)        | Desktop GUI for batch synchronization of Forgejo repositories                               |
+| **[Forgejo Sync Manager CLI](https://github.com/smartlegionlab/forgejo-sync-manager-cli)**               | Command-line Forgejo sync tool                                                              |
+| **[GitHub Repos Backup Tools](https://github.com/smartlegionlab/github-repos-backup-tools)**             | Automated backup of GitHub repositories and GISTs                                           |
+| **[GitHub SSH Key Manager](https://github.com/smartlegionlab/github-ssh-key)**                           | Manage GitHub SSH keys from the command line                                                |
+
+### Libraries
+
+| Library                                                                                              | Description                                                       |
+|------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------|
+| **[forgejo-sync-manager-core](https://github.com/smartlegionlab/forgejo-sync-manager-core)**         | Universal core library for Forgejo repository synchronization     |
+| **[smart-repository-manager-core](https://github.com/smartlegionlab/smart-repository-manager-core)** | Python library for managing Git repositories with SSH validation  |
 
 ### Powered By
 
 This application is built on top of:
 
-| Library                                                                                      | Description                                                   | Version |
-|----------------------------------------------------------------------------------------------|---------------------------------------------------------------|---------|
-| **[forgejo-sync-manager-core](https://github.com/smartlegionlab/forgejo-sync-manager-core)** | Universal core library for Forgejo repository synchronization | v1.0.2  |
-| **PyQt6**                                                                                    | Python bindings for Qt6 framework                             | ≥6.5.0  |
-| **requests**                                                                                 | HTTP library for Python                                       | ≥2.31.0 |
+| Library                                                                                      | Description                                                   | Version   |
+|----------------------------------------------------------------------------------------------|---------------------------------------------------------------|-----------|
+| **[forgejo-sync-manager-core](https://github.com/smartlegionlab/forgejo-sync-manager-core)** | Universal core library for Forgejo repository synchronization | v1.0.2    |
+| **PyQt5**                                                                                    | Python bindings for Qt5 framework                             | ≥5.15.9   |
+| **requests**                                                                                 | HTTP library for Python                                       | ≥2.31.0   |
 
 ### Related Projects
 
-| Project                       | Description                                      | Repository                                                            |
-|-------------------------------|--------------------------------------------------|-----------------------------------------------------------------------|
-| **forgejo-sync-manager-cli**  | Command-line interface for batch synchronization | [GitHub](https://github.com/smartlegionlab/forgejo-sync-manager-cli)  |
-| **forgejo-sync-manager-core** | Universal core library                           | [GitHub](https://github.com/smartlegionlab/forgejo-sync-manager-core) |
+| Project                            | Description                                        | Repository                                                                   |
+|------------------------------------|----------------------------------------------------|------------------------------------------------------------------------------|
+| **forgejo-sync-manager-cli**       | Command-line interface for batch synchronization   | [GitHub](https://github.com/smartlegionlab/forgejo-sync-manager-cli)         |
+| **forgejo-sync-manager-core**      | Universal core library                             | [GitHub](https://github.com/smartlegionlab/forgejo-sync-manager-core)        |
+| **smart-repository-manager-gui**   | GitHub repository management GUI                   | [GitHub](https://github.com/smartlegionlab/smart-repository-manager-gui)     |
+| **smart-repository-manager-cli**   | GitHub repository management CLI                   | [GitHub](https://github.com/smartlegionlab/smart-repository-manager-cli)     |
+| **smart-repository-manager-core**  | Python core library for Git repositories           | [GitHub](https://github.com/smartlegionlab/smart-repository-manager-core)    |
+| **github-repos-backup-tools**      | Automated backup of GitHub repositories and GISTs  | [GitHub](https://github.com/smartlegionlab/github-repos-backup-tools)        |
+| **github-ssh-key**                 | GitHub SSH key manager                             | [GitHub](https://github.com/smartlegionlab/github-ssh-key)                   |
 
 ## See Also
 
-- **[forgejo-sync-manager-cli](https://github.com/smartlegionlab/forgejo-sync-manager-cli)** - If you prefer command-line interface
-- **[forgejo-sync-manager-core](https://github.com/smartlegionlab/forgejo-sync-manager-core)** - Core library for custom implementations
+- **[forgejo-sync-manager-cli](https://github.com/smartlegionlab/forgejo-sync-manager-cli)** — If you prefer a command-line interface
+- **[forgejo-sync-manager-core](https://github.com/smartlegionlab/forgejo-sync-manager-core)** — Core library for custom implementations
+- **[Smart Repository Manager GUI](https://github.com/smartlegionlab/smart-repository-manager-gui)** — If you need GitHub (not Forgejo) repository management
+- **[GitHub Repos Backup Tools](https://github.com/smartlegionlab/github-repos-backup-tools)** — For backing up all your GitHub repositories and GISTs
+- **[Repository Management Ecosystem](https://smartlegionlab.github.io/ecosystems/repository-management-ecosystem.html)** — Full ecosystem overview
 
 ---
 

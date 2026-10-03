@@ -65,7 +65,7 @@ class AboutDialog(QDialog):
         title.setStyleSheet(f"color: {ModernDarkTheme.PRIMARY_COLOR};")
         layout.addWidget(title)
 
-        version = QLabel("Version v1.0.6")
+        version = QLabel("Version v1.0.7")
         version.setAlignment(Qt.AlignCenter)
         version.setStyleSheet(f"color: {ModernDarkTheme.TEXT_SECONDARY}; font-size: 12px;")
         layout.addWidget(version)
@@ -93,7 +93,7 @@ class AboutDialog(QDialog):
         links_layout.setSpacing(6)
 
         links = [
-            ("Website", "https://smartlegionlab.com"),
+            ("Website", "https://smartlegionlab.github.io"),
             ("GitHub Repository", "https://github.com/smartlegionlab/forgejo-sync-manager-gui"),
             ("Core Library", "https://github.com/smartlegionlab/forgejo-sync-manager-core"),
             ("Disclaimer", "https://github.com/smartlegionlab/forgejo-sync-manager-gui/blob/master/DISCLAIMER.md"),

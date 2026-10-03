@@ -22,7 +22,7 @@ from ui.dialogs.setup_dialog import SetupDialog
 from ui.dialogs.sync_dialog import SyncDialog
 from ui.dialogs.about_dialog import AboutDialog
 
-VERSION = "1.0.6"
+VERSION = "1.0.7"
 
 
 class LoadWorker(QThread):
@@ -89,8 +89,8 @@ class MainWindow(QMainWindow):
         self.animation_timer = None
         self.animation_counter = 0
 
-        self.setWindowTitle(f"{ConfigManager.APP_FULL_NAME} v{VERSION}")
-        self.setMinimumSize(670, 480)
+        self.setWindowTitle(f"{ConfigManager.APP_FULL_NAME}")
+        self.setMinimumSize(800, 600)
 
         self.setup_ui()
         self.setup_menu()

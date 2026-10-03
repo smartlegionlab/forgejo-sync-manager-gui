@@ -118,36 +118,40 @@ class RepoTable(QWidget):
         self.update_table()
 
     def update_table(self):
-        self.table.setRowCount(len(self.filtered_repositories))
+        self.table.setUpdatesEnabled(False)
+        try:
+            self.table.setRowCount(len(self.filtered_repositories))
 
-        for i, repo in enumerate(self.filtered_repositories):
-            num_item = QTableWidgetItem(str(i + 1))
-            num_item.setTextAlignment(Qt.AlignCenter)
-            self.table.setItem(i, 0, num_item)
+            for i, repo in enumerate(self.filtered_repositories):
+                num_item = QTableWidgetItem(str(i + 1))
+                num_item.setTextAlignment(Qt.AlignCenter)
+                self.table.setItem(i, 0, num_item)
 
-            name_item = QTableWidgetItem(repo.get('name', 'Unknown'))
-            self.table.setItem(i, 1, name_item)
+                name_item = QTableWidgetItem(repo.get('name', 'Unknown'))
+                self.table.setItem(i, 1, name_item)
 
-            is_private = repo.get('private', False)
-            type_text = "🔒 Private" if is_private else "🌍 Public"
-            type_item = QTableWidgetItem(type_text)
-            if is_private:
-                type_item.setForeground(QBrush(QColor(ModernDarkTheme.WARNING_COLOR)))
-            else:
-                type_item.setForeground(QBrush(QColor(ModernDarkTheme.SUCCESS_COLOR)))
-            self.table.setItem(i, 2, type_item)
+                is_private = repo.get('private', False)
+                type_text = "🔒 Private" if is_private else "🌍 Public"
+                type_item = QTableWidgetItem(type_text)
+                if is_private:
+                    type_item.setForeground(QBrush(QColor(ModernDarkTheme.WARNING_COLOR)))
+                else:
+                    type_item.setForeground(QBrush(QColor(ModernDarkTheme.SUCCESS_COLOR)))
+                self.table.setItem(i, 2, type_item)
 
-            size_mb = repo.get('size', 0) / 1024
-            size_item = QTableWidgetItem(f"{size_mb:.2f} MB")
-            size_item.setTextAlignment(Qt.AlignRight)
-            self.table.setItem(i, 3, size_item)
+                size_mb = repo.get('size', 0) / 1024
+                size_item = QTableWidgetItem(f"{size_mb:.2f} MB")
+                size_item.setTextAlignment(Qt.AlignRight)
+                self.table.setItem(i, 3, size_item)
 
-            local_exists = self._check_local_exists(repo.get('name', ''))
-            status_text = "📁 Local" if local_exists else "🌐 Remote"
-            status_item = QTableWidgetItem(status_text)
-            if not local_exists:
-                status_item.setForeground(QBrush(QColor(ModernDarkTheme.INFO_COLOR)))
-            self.table.setItem(i, 4, status_item)
+                local_exists = self._check_local_exists(repo.get('name', ''))
+                status_text = "📁 Local" if local_exists else "🌐 Remote"
+                status_item = QTableWidgetItem(status_text)
+                if not local_exists:
+                    status_item.setForeground(QBrush(QColor(ModernDarkTheme.INFO_COLOR)))
+                self.table.setItem(i, 4, status_item)
+        finally:
+            self.table.setUpdatesEnabled(True)
 
         total = len(self.filtered_repositories)
         private_count = sum(1 for r in self.filtered_repositories if r.get('private', False))
