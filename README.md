@@ -185,6 +185,43 @@ rm -rf ~/forgejo-sync-manager
 | Desktop shortcut (opt-in)  | `~/Desktop/forgejo-sync-manager-gui.desktop`                          |
 | User data (config)         | `~/forgejo-sync-manager/config.json`                                  |
 
+---
+
+## Desktop Integration (Linux)
+
+> **Note:** If you installed the app via `install.sh`, the application menu
+> entry is already created automatically. The in-app option described below
+> is useful when you run the app manually from a custom location, or when
+> you want to add a Desktop shortcut on demand. It is also the recommended
+> way for development: it creates a shortcut pointing to the **currently
+> running instance** (your working copy), not to a copy under
+> `~/.local/share/`.
+
+**Creating Application Shortcuts:**
+
+The application allows you to create desktop entries directly from the menu:
+
+1. **Go to File → Create Desktop Entry**
+2. **Choose locations:**
+   - ✓ Application Menu (`~/.local/share/applications/`) - adds to system app menu
+   - □ Desktop (`~/Desktop/`) - creates shortcut on desktop
+3. **Click "Create Entry"**
+
+**What happens:**
+- Creates `.desktop` file(s) with proper configuration
+- Sets executable permissions automatically
+- Uses application icon if available
+
+**After creation:**
+- **Application Menu**: Log out and back in (or restart desktop) for entry to appear
+- **Desktop shortcut**: May show "Unsecured Application Launcher" warning
+  - Right-click on shortcut → "Allow Launching" or "Trust"
+  - This is a one-time security confirmation
+
+**Note:** This feature is only available on Linux systems with desktop environments that support `.desktop` files (GNOME, KDE, XFCE, etc.).
+
+---
+
 ## Usage
 
 ```bash
