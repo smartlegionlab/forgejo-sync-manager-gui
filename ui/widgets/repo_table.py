@@ -1,11 +1,11 @@
 # Copyright (©) 2026, Alexander Suvorov. All rights reserved.
-from PyQt6.QtWidgets import (
+from PyQt5.QtWidgets import (
     QTableWidget, QTableWidgetItem, QAbstractItemView, QHeaderView,
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit,
-    QComboBox, QMenu
+    QComboBox, QMenu, QAction
 )
-from PyQt6.QtCore import Qt, pyqtSignal
-from PyQt6.QtGui import QAction, QBrush, QColor
+from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtGui import QBrush, QColor
 
 from ui.theme import ModernDarkTheme
 
@@ -60,19 +60,19 @@ class RepoTable(QWidget):
         self.table = QTableWidget()
         self.table.setColumnCount(5)
         self.table.setHorizontalHeaderLabels(["#", "Repository", "Type", "Size", "Status"])
-        self.table.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
-        self.table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
+        self.table.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.table.verticalHeader().setVisible(False)
         self.table.doubleClicked.connect(self.on_double_click)
-        self.table.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
+        self.table.setContextMenuPolicy(Qt.CustomContextMenu)
         self.table.customContextMenuRequested.connect(self.show_context_menu)
 
         header = self.table.horizontalHeader()
-        header.setSectionResizeMode(0, QHeaderView.ResizeMode.ResizeToContents)
-        header.setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)
-        header.setSectionResizeMode(2, QHeaderView.ResizeMode.ResizeToContents)
-        header.setSectionResizeMode(3, QHeaderView.ResizeMode.ResizeToContents)
-        header.setSectionResizeMode(4, QHeaderView.ResizeMode.ResizeToContents)
+        header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(1, QHeaderView.Stretch)
+        header.setSectionResizeMode(2, QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(3, QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(4, QHeaderView.ResizeToContents)
 
         layout.addWidget(self.table)
 
@@ -122,7 +122,7 @@ class RepoTable(QWidget):
 
         for i, repo in enumerate(self.filtered_repositories):
             num_item = QTableWidgetItem(str(i + 1))
-            num_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+            num_item.setTextAlignment(Qt.AlignCenter)
             self.table.setItem(i, 0, num_item)
 
             name_item = QTableWidgetItem(repo.get('name', 'Unknown'))
@@ -139,7 +139,7 @@ class RepoTable(QWidget):
 
             size_mb = repo.get('size', 0) / 1024
             size_item = QTableWidgetItem(f"{size_mb:.2f} MB")
-            size_item.setTextAlignment(Qt.AlignmentFlag.AlignRight)
+            size_item.setTextAlignment(Qt.AlignRight)
             self.table.setItem(i, 3, size_item)
 
             local_exists = self._check_local_exists(repo.get('name', ''))
@@ -225,7 +225,7 @@ class RepoTable(QWidget):
             stats_action.setEnabled(False)
             menu.addAction(stats_action)
 
-        menu.exec(self.table.viewport().mapToGlobal(position))
+        menu.exec_(self.table.viewport().mapToGlobal(position))
 
     def update_stats(self, total: int, private_count: int, local_count: int):
         self.stats_label.setText(f"Total: {total} | Private: {private_count} | Local: {local_count}")

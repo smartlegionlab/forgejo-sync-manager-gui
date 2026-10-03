@@ -2,8 +2,8 @@
 import sys
 from pathlib import Path
 
-from PyQt6.QtWidgets import QApplication
-from PyQt6.QtGui import QIcon
+from PyQt5.QtWidgets import QApplication
+from PyQt5.QtGui import QIcon
 
 sys.path.insert(0, str(Path(__file__).parent))
 
@@ -22,7 +22,7 @@ def main():
     window = MainWindow()
     window.show()
 
-    sys.exit(app.exec())
+    sys.exit(app.exec_())
 
 
 if __name__ == "__main__":

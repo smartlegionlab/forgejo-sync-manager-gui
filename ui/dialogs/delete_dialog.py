@@ -3,12 +3,12 @@ import shutil
 from datetime import datetime
 from typing import List
 
-from PyQt6.QtWidgets import (
+from PyQt5.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
     QProgressBar, QTextEdit, QApplication
 )
-from PyQt6.QtCore import Qt, QThread, pyqtSignal, QTimer
-from PyQt6.QtGui import QFont
+from PyQt5.QtCore import Qt, QThread, pyqtSignal, QTimer
+from PyQt5.QtGui import QFont
 
 from forgejo_sync_manager_core.core.sync_manager_gui import GUISyncManager
 from ui.theme import ModernDarkTheme
@@ -81,12 +81,12 @@ class DeleteAllDialog(QDialog):
         title_font.setPointSize(14)
         title_font.setBold(True)
         title.setFont(title_font)
-        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        title.setAlignment(Qt.AlignCenter)
         title.setStyleSheet(f"color: {ModernDarkTheme.ERROR_COLOR};")
         layout.addWidget(title)
 
         info_label = QLabel(f"Repositories to delete: {len(self.repositories)}")
-        info_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        info_label.setAlignment(Qt.AlignCenter)
         info_label.setStyleSheet(f"color: {ModernDarkTheme.TEXT_SECONDARY};")
         layout.addWidget(info_label)
 
@@ -96,7 +96,7 @@ class DeleteAllDialog(QDialog):
         layout.addWidget(self.progress_bar)
 
         self.current_label = QLabel("Preparing...")
-        self.current_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.current_label.setAlignment(Qt.AlignCenter)
         self.current_label.setStyleSheet(f"color: {ModernDarkTheme.TEXT_SECONDARY}; font-size: 12px;")
         layout.addWidget(self.current_label)
 

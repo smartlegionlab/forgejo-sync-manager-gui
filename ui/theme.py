@@ -1,5 +1,5 @@
 # Copyright (©) 2026, Alexander Suvorov. All rights reserved.
-from PyQt6.QtGui import QPalette, QColor
+from PyQt5.QtGui import QPalette, QColor
 
 
 class ModernDarkTheme:
@@ -23,13 +23,13 @@ class ModernDarkTheme:
         app.setStyle("Fusion")
 
         dark_palette = QPalette()
-        dark_palette.setColor(QPalette.ColorRole.Window, QColor(ModernDarkTheme.DARK_BG))
-        dark_palette.setColor(QPalette.ColorRole.WindowText, QColor(ModernDarkTheme.TEXT_PRIMARY))
-        dark_palette.setColor(QPalette.ColorRole.Base, QColor(ModernDarkTheme.CARD_BG))
-        dark_palette.setColor(QPalette.ColorRole.Text, QColor(ModernDarkTheme.TEXT_PRIMARY))
-        dark_palette.setColor(QPalette.ColorRole.Button, QColor("#252525"))
-        dark_palette.setColor(QPalette.ColorRole.ButtonText, QColor(ModernDarkTheme.TEXT_PRIMARY))
-        dark_palette.setColor(QPalette.ColorRole.Highlight, QColor(ModernDarkTheme.PRIMARY_COLOR))
+        dark_palette.setColor(QPalette.Window, QColor(ModernDarkTheme.DARK_BG))
+        dark_palette.setColor(QPalette.WindowText, QColor(ModernDarkTheme.TEXT_PRIMARY))
+        dark_palette.setColor(QPalette.Base, QColor(ModernDarkTheme.CARD_BG))
+        dark_palette.setColor(QPalette.Text, QColor(ModernDarkTheme.TEXT_PRIMARY))
+        dark_palette.setColor(QPalette.Button, QColor("#252525"))
+        dark_palette.setColor(QPalette.ButtonText, QColor(ModernDarkTheme.TEXT_PRIMARY))
+        dark_palette.setColor(QPalette.Highlight, QColor(ModernDarkTheme.PRIMARY_COLOR))
 
         app.setPalette(dark_palette)
 

@@ -1,12 +1,12 @@
 # Copyright (©) 2026, Alexander Suvorov. All rights reserved.
 import sys
 import os
-from PyQt6.QtWidgets import (
+from PyQt5.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit,
     QPushButton, QScrollArea, QWidget, QMessageBox
 )
-from PyQt6.QtCore import Qt, QThread, pyqtSignal
-from PyQt6.QtGui import QFont
+from PyQt5.QtCore import Qt, QThread, pyqtSignal
+from PyQt5.QtGui import QFont
 
 import requests
 from forgejo_sync_manager_core.core.auth import ForgejoAuth
@@ -65,12 +65,12 @@ class SetupDialog(QDialog):
         title_font.setPointSize(16)
         title_font.setBold(True)
         title.setFont(title_font)
-        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        title.setAlignment(Qt.AlignCenter)
         title.setStyleSheet(f"color: {ModernDarkTheme.PRIMARY_COLOR};")
         main_layout.addWidget(title)
 
         subtitle = QLabel("Please configure your Forgejo connection")
-        subtitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        subtitle.setAlignment(Qt.AlignCenter)
         subtitle.setStyleSheet(f"color: {ModernDarkTheme.TEXT_SECONDARY}; margin-bottom: 10px;")
         main_layout.addWidget(subtitle)
 
@@ -111,7 +111,7 @@ class SetupDialog(QDialog):
 
         self.token_input = QLineEdit()
         self.token_input.setPlaceholderText("Personal Access Token")
-        self.token_input.setEchoMode(QLineEdit.EchoMode.Password)
+        self.token_input.setEchoMode(QLineEdit.Password)
         self.token_input.setMinimumHeight(35)
         self.token_input.setStyleSheet(f"""
             QLineEdit {{
@@ -181,7 +181,7 @@ class SetupDialog(QDialog):
         main_layout.addLayout(button_layout)
 
         self.status_label = QLabel("")
-        self.status_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.status_label.setAlignment(Qt.AlignCenter)
         self.status_label.setWordWrap(True)
         self.status_label.setStyleSheet("font-size: 12px; margin-top: 10px;")
         main_layout.addWidget(self.status_label)
@@ -224,10 +224,10 @@ class SetupDialog(QDialog):
                 f"Save this configuration?\n\n"
                 f"Connected as: @{auth.username}\n\n"
                 f"Restart application to load your repositories?",
-                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
+                QMessageBox.Yes | QMessageBox.No
             )
 
-            if reply == QMessageBox.StandardButton.Yes:
+            if reply == QMessageBox.Yes:
                 self.restart_application()
             else:
                 self.reject()

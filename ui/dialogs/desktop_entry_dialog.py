@@ -2,12 +2,12 @@
 import os
 import sys
 
-from PyQt6.QtWidgets import (
+from PyQt5.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
     QGroupBox, QCheckBox, QMessageBox
 )
-from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QFont
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QFont
 
 from ui.theme import ModernDarkTheme
 
@@ -44,7 +44,7 @@ class DesktopEntryDialog(QDialog):
         title_font.setPointSize(14)
         title_font.setBold(True)
         title_label.setFont(title_font)
-        title_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        title_label.setAlignment(Qt.AlignCenter)
         title_label.setStyleSheet(f"color: {ModernDarkTheme.PRIMARY_COLOR};")
         layout.addWidget(title_label)
 
@@ -56,7 +56,7 @@ class DesktopEntryDialog(QDialog):
             f"<b>Application Path:</b> {self.app_path}<br>"
             f"<b>Icon:</b> {self.icon_path if self.icon_path else 'Not found'}"
         )
-        info_text.setTextFormat(Qt.TextFormat.RichText)
+        info_text.setTextFormat(Qt.RichText)
         info_text.setWordWrap(True)
         info_layout.addWidget(info_text)
 

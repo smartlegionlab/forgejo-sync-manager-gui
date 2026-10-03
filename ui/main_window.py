@@ -3,13 +3,13 @@ import os
 import subprocess
 from pathlib import Path
 
-from PyQt6.QtWidgets import (
+from PyQt5.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QLabel, QPushButton, QMessageBox, QStatusBar, QApplication,
-    QDialog, QProgressBar, QFrame
+    QDialog, QProgressBar, QFrame, QAction
 )
-from PyQt6.QtCore import Qt, QTimer, QThread, pyqtSignal
-from PyQt6.QtGui import QFont, QAction, QKeySequence
+from PyQt5.QtCore import Qt, QTimer, QThread, pyqtSignal
+from PyQt5.QtGui import QFont, QKeySequence
 
 from forgejo_sync_manager_core.core.config import ConfigManager
 from forgejo_sync_manager_core.core.auth import ForgejoAuth
@@ -22,7 +22,7 @@ from ui.dialogs.setup_dialog import SetupDialog
 from ui.dialogs.sync_dialog import SyncDialog
 from ui.dialogs.about_dialog import AboutDialog
 
-VERSION = "1.0.4"
+VERSION = "1.0.6"
 
 
 class LoadWorker(QThread):
@@ -89,7 +89,7 @@ class MainWindow(QMainWindow):
         self.animation_timer = None
         self.animation_counter = 0
 
-        self.setWindowTitle(f"{ConfigManager.APP_FULL_NAME}")
+        self.setWindowTitle(f"{ConfigManager.APP_FULL_NAME} v{VERSION}")
         self.setMinimumSize(670, 480)
 
         self.setup_ui()
@@ -146,10 +146,10 @@ class MainWindow(QMainWindow):
         title_font.setBold(True)
         title.setFont(title_font)
         title.setStyleSheet(f"color: {ModernDarkTheme.PRIMARY_COLOR};")
-        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        title.setAlignment(Qt.AlignCenter)
 
         subtitle = QLabel("Forgejo Repository Synchronization Tool")
-        subtitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        subtitle.setAlignment(Qt.AlignCenter)
         subtitle.setStyleSheet(f"color: {ModernDarkTheme.TEXT_SECONDARY}; font-size: 12px;")
 
         layout.addWidget(title)
@@ -189,7 +189,7 @@ class MainWindow(QMainWindow):
                 color: #1a75ff;
             }}
         """)
-        self.user_label.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.user_label.setCursor(Qt.PointingHandCursor)
         self.user_label.mousePressEvent = self.on_user_click
         left_layout.addWidget(self.user_label)
 
@@ -212,7 +212,7 @@ class MainWindow(QMainWindow):
                 color: #1a75ff;
             }}
         """)
-        self.server_label.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.server_label.setCursor(Qt.PointingHandCursor)
         self.server_label.mousePressEvent = self.on_server_click
         center_layout.addWidget(self.server_label)
 
@@ -253,12 +253,12 @@ class MainWindow(QMainWindow):
         name_font.setPointSize(16)
         name_font.setBold(True)
         name_label.setFont(name_font)
-        name_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        name_label.setAlignment(Qt.AlignCenter)
         name_label.setStyleSheet(f"color: {ModernDarkTheme.PRIMARY_COLOR};")
         layout.addWidget(name_label)
 
         separator = QFrame()
-        separator.setFrameShape(QFrame.Shape.HLine)
+        separator.setFrameShape(QFrame.HLine)
         separator.setStyleSheet(f"background-color: {ModernDarkTheme.BORDER_COLOR};")
         layout.addWidget(separator)
 
@@ -302,7 +302,7 @@ class MainWindow(QMainWindow):
         """)
         layout.addWidget(close_btn)
 
-        dialog.exec()
+        dialog.exec_()
 
     def create_button_bar(self) -> QWidget:
         widget = QWidget()
@@ -438,12 +438,12 @@ class MainWindow(QMainWindow):
         title_font.setPointSize(16)
         title_font.setBold(True)
         title.setFont(title_font)
-        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        title.setAlignment(Qt.AlignCenter)
         title.setStyleSheet(f"color: {ModernDarkTheme.PRIMARY_COLOR};")
         layout.addWidget(title)
 
         separator = QFrame()
-        separator.setFrameShape(QFrame.Shape.HLine)
+        separator.setFrameShape(QFrame.HLine)
         separator.setStyleSheet(f"background-color: {ModernDarkTheme.BORDER_COLOR};")
         layout.addWidget(separator)
 
@@ -523,7 +523,7 @@ class MainWindow(QMainWindow):
         button_layout.addStretch()
         layout.addLayout(button_layout)
 
-        dialog.exec()
+        dialog.exec_()
 
     def start_load_worker(self, config):
         self.load_worker = LoadWorker(config)
@@ -592,7 +592,7 @@ class MainWindow(QMainWindow):
 
         dialog = SyncDialog(self.sync_manager, self.repositories, "sync", self)
         dialog.repo_status_updated.connect(self.update_repo_status_in_table)
-        dialog.exec()
+        dialog.exec_()
 
     def update_only(self):
         if not self.sync_manager or not self.repositories:
@@ -609,14 +609,14 @@ class MainWindow(QMainWindow):
 
         dialog = SyncDialog(self.sync_manager, repos_to_update, "sync", self)
         dialog.repo_status_updated.connect(self.update_repo_status_in_table)
-        dialog.exec()
+        dialog.exec_()
 
     def sync_selected(self, repositories: list):
         if not repositories:
             return
         dialog = SyncDialog(self.sync_manager, repositories, "sync", self)
         dialog.repo_status_updated.connect(self.update_repo_status_in_table)
-        dialog.exec()
+        dialog.exec_()
 
     def reclone_selected(self, repositories: list):
         if not repositories:
@@ -627,13 +627,13 @@ class MainWindow(QMainWindow):
             "Confirm Re-clone",
             f"Re-clone {len(repositories)} repositories?\n\n"
             f"This will DELETE local copies and clone again.",
-            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
+            QMessageBox.Yes | QMessageBox.No
         )
 
-        if reply == QMessageBox.StandardButton.Yes:
+        if reply == QMessageBox.Yes:
             dialog = SyncDialog(self.sync_manager, repositories, "reclone", self)
             dialog.repo_status_updated.connect(self.update_repo_status_in_table)
-            dialog.exec()
+            dialog.exec_()
 
     def reclone_all(self):
         if not self.repositories:
@@ -645,13 +645,13 @@ class MainWindow(QMainWindow):
             f"Re-clone ALL {len(self.repositories)} repositories?\n\n"
             f"This will DELETE all local copies and clone them again.\n"
             f"This action cannot be undone!",
-            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
+            QMessageBox.Yes | QMessageBox.No
         )
 
-        if reply == QMessageBox.StandardButton.Yes:
+        if reply == QMessageBox.Yes:
             dialog = SyncDialog(self.sync_manager, self.repositories, "reclone", self)
             dialog.repo_status_updated.connect(self.update_repo_status_in_table)
-            dialog.exec()
+            dialog.exec_()
 
     def open_local_folder(self, repo_name: str):
         if not self.sync_manager:
@@ -689,12 +689,12 @@ class MainWindow(QMainWindow):
         name_font.setPointSize(16)
         name_font.setBold(True)
         name_label.setFont(name_font)
-        name_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        name_label.setAlignment(Qt.AlignCenter)
         name_label.setStyleSheet(f"color: {ModernDarkTheme.PRIMARY_COLOR};")
         layout.addWidget(name_label)
 
         separator = QFrame()
-        separator.setFrameShape(QFrame.Shape.HLine)
+        separator.setFrameShape(QFrame.HLine)
         separator.setStyleSheet(f"background-color: {ModernDarkTheme.BORDER_COLOR};")
         layout.addWidget(separator)
 
@@ -764,21 +764,21 @@ class MainWindow(QMainWindow):
         button_layout.addWidget(close_btn)
 
         layout.addLayout(button_layout)
-        dialog.exec()
+        dialog.exec_()
 
     def open_setup(self):
         dialog = SetupDialog(self.config_manager, self)
-        if dialog.exec():
+        if dialog.exec_():
             self.initialize()
 
     def open_settings(self):
         self.open_setup()
 
     def show_about(self):
-        AboutDialog(self).exec()
+        AboutDialog(self).exec_()
 
     def center_on_screen(self):
-        screen = self.screen().geometry()
+        screen = QApplication.primaryScreen().geometry()
         x = (screen.width() - self.width()) // 2
         y = (screen.height() - self.height()) // 2
         self.move(x, y)
@@ -788,9 +788,9 @@ class MainWindow(QMainWindow):
         self.preloader_dialog.setWindowTitle("Please Wait")
         self.preloader_dialog.setFixedSize(400, 180)
         self.preloader_dialog.setWindowFlags(
-            Qt.WindowType.Dialog |
-            Qt.WindowType.FramelessWindowHint |
-            Qt.WindowType.WindowStaysOnTopHint
+            Qt.Dialog |
+            Qt.FramelessWindowHint |
+            Qt.WindowStaysOnTopHint
         )
         self.preloader_dialog.setModal(True)
         self.preloader_dialog.setStyleSheet(f"""
@@ -807,11 +807,11 @@ class MainWindow(QMainWindow):
 
         self.loading_label = QLabel("⏳")
         self.loading_label.setStyleSheet("font-size: 40px;")
-        self.loading_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.loading_label.setAlignment(Qt.AlignCenter)
         layout.addWidget(self.loading_label)
 
         self.message_label = QLabel(message)
-        self.message_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.message_label.setAlignment(Qt.AlignCenter)
         self.message_label.setStyleSheet(f"""
             color: {ModernDarkTheme.TEXT_PRIMARY};
             font-size: 14px;
@@ -868,7 +868,7 @@ class MainWindow(QMainWindow):
     def create_desktop_entry(self):
         from ui.dialogs.desktop_entry_dialog import DesktopEntryDialog
         dialog = DesktopEntryDialog(self)
-        dialog.exec()
+        dialog.exec_()
 
     def delete_local_repositories(self, repositories: list):
         if not repositories:
@@ -878,10 +878,10 @@ class MainWindow(QMainWindow):
             self,
             "Confirm Delete",
             f"Delete local copies of {len(repositories)} repositories?\n\nThis action cannot be undone!",
-            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
+            QMessageBox.Yes | QMessageBox.No
         )
 
-        if reply != QMessageBox.StandardButton.Yes:
+        if reply != QMessageBox.Yes:
             return
 
         deleted_count = 0
@@ -919,15 +919,15 @@ class MainWindow(QMainWindow):
             f"💾 Total disk space: {self._calculate_total_size(local_repos)}\n\n"
             f"⚠️ This action CANNOT BE UNDONE!\n"
             f"All local changes will be lost permanently.",
-            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
-            QMessageBox.StandardButton.No
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No
         )
 
-        if reply == QMessageBox.StandardButton.Yes:
+        if reply == QMessageBox.Yes:
             from ui.dialogs.delete_dialog import DeleteAllDialog
             dialog = DeleteAllDialog(self.sync_manager, local_repos, self)
             dialog.repo_status_updated.connect(self.update_repo_status_in_table)
-            dialog.exec()
+            dialog.exec_()
 
     def _calculate_total_size(self, repositories: list) -> str:
         total_size = 0
@@ -978,9 +978,9 @@ class MainWindow(QMainWindow):
             self,
             "Exit",
             "Are you sure you want to exit?",
-            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
+            QMessageBox.Yes | QMessageBox.No
         )
-        if reply == QMessageBox.StandardButton.Yes:
+        if reply == QMessageBox.Yes:
             event.accept()
         else:
             event.ignore()

@@ -1,10 +1,10 @@
 # Copyright (©) 2026, Alexander Suvorov. All rights reserved.
-from PyQt6.QtWidgets import (
+from PyQt5.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
     QScrollArea, QWidget, QFrame
 )
-from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QFont
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QFont
 
 from forgejo_sync_manager_core.core.config import ConfigManager
 from ui.theme import ModernDarkTheme
@@ -61,12 +61,12 @@ class AboutDialog(QDialog):
         title_font.setPointSize(18)
         title_font.setBold(True)
         title.setFont(title_font)
-        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        title.setAlignment(Qt.AlignCenter)
         title.setStyleSheet(f"color: {ModernDarkTheme.PRIMARY_COLOR};")
         layout.addWidget(title)
 
         version = QLabel("Version v1.0.6")
-        version.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        version.setAlignment(Qt.AlignCenter)
         version.setStyleSheet(f"color: {ModernDarkTheme.TEXT_SECONDARY}; font-size: 12px;")
         layout.addWidget(version)
 
@@ -76,14 +76,14 @@ class AboutDialog(QDialog):
             "Desktop GUI application for batch synchronization\n"
             "of Forgejo repositories to local machine."
         )
-        desc.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        desc.setAlignment(Qt.AlignCenter)
         desc.setStyleSheet(f"color: {ModernDarkTheme.TEXT_PRIMARY}; font-size: 12px;")
         layout.addWidget(desc)
 
         layout.addSpacing(15)
 
         separator = QFrame()
-        separator.setFrameShape(QFrame.Shape.HLine)
+        separator.setFrameShape(QFrame.HLine)
         separator.setStyleSheet(f"background-color: {ModernDarkTheme.BORDER_COLOR};")
         layout.addWidget(separator)
 
@@ -103,7 +103,7 @@ class AboutDialog(QDialog):
         for text, url in links:
             link_label = QLabel(f'<a href="{url}" style="color: {ModernDarkTheme.PRIMARY_COLOR}; text-decoration: none;">{text}</a>')
             link_label.setOpenExternalLinks(True)
-            link_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            link_label.setAlignment(Qt.AlignCenter)
             link_label.setStyleSheet("font-size: 12px;")
             links_layout.addWidget(link_label)
 
@@ -112,14 +112,14 @@ class AboutDialog(QDialog):
         layout.addSpacing(10)
 
         separator2 = QFrame()
-        separator2.setFrameShape(QFrame.Shape.HLine)
+        separator2.setFrameShape(QFrame.HLine)
         separator2.setStyleSheet(f"background-color: {ModernDarkTheme.BORDER_COLOR};")
         layout.addWidget(separator2)
 
         layout.addSpacing(10)
 
         copyright_label = QLabel("Copyright (c) 2026, Alexander Suvorov")
-        copyright_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        copyright_label.setAlignment(Qt.AlignCenter)
         copyright_label.setStyleSheet(f"color: {ModernDarkTheme.TEXT_SECONDARY}; font-size: 10px;")
         layout.addWidget(copyright_label)
 
