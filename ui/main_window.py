@@ -23,7 +23,7 @@ from ui.dialogs.setup_dialog import SetupDialog
 from ui.dialogs.sync_dialog import SyncDialog
 from ui.dialogs.about_dialog import AboutDialog
 
-VERSION = "1.0.8"
+VERSION = "1.0.9"
 
 
 class LoadWorker(QThread):
