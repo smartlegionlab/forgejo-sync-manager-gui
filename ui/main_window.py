@@ -120,6 +120,7 @@ class MainWindow(QMainWindow):
         self.repo_table.open_folder_selected.connect(self.open_local_folder)
         self.repo_table.open_browser_selected.connect(self.open_in_browser)
         self.repo_table.delete_selected.connect(self.delete_local_repositories)
+        self.repo_table.open_repos_root.connect(self.open_repos_root)
         main_layout.addWidget(self.repo_table, 1)
 
         button_bar = self.create_button_bar()
@@ -666,6 +667,24 @@ class MainWindow(QMainWindow):
 
         if not repo_path.exists():
             QMessageBox.warning(self, "Not Found", f"Local folder not found: {repo_name}")
+            return
+
+        try:
+            if os.name == 'nt':
+                os.startfile(str(repo_path))
+            elif os.name == 'posix':
+                subprocess.run(['xdg-open', str(repo_path)], check=False)
+        except Exception as e:
+            QMessageBox.warning(self, "Error", f"Cannot open folder: {str(e)}")
+
+    def open_repos_root(self):
+        if not self.sync_manager:
+            return
+
+        repo_path = self.sync_manager.repos_dir
+
+        if not repo_path.exists():
+            QMessageBox.warning(self, "Not Found", f"Repos folder not found: {repo_path}")
             return
 
         try:
