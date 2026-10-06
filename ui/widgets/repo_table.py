@@ -1,13 +1,89 @@
 # Copyright (©) 2026, Alexander Suvorov. All rights reserved.
 from PyQt5.QtWidgets import (
-    QTableWidget, QTableWidgetItem, QAbstractItemView, QHeaderView,
+    QTableView, QAbstractItemView, QHeaderView,
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit,
     QComboBox, QMenu, QAction
 )
-from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtGui import QBrush, QColor
+from PyQt5.QtCore import Qt, pyqtSignal, QTimer, QAbstractTableModel, QModelIndex
+from PyQt5.QtGui import QColor, QBrush
 
 from ui.theme import ModernDarkTheme
+
+
+class RepoTableModel(QAbstractTableModel):
+    HEADERS = ["#", "Repository", "Type", "Size", "Status"]
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self._repos = []
+        self._color_private = QColor(ModernDarkTheme.WARNING_COLOR)
+        self._color_public = QColor(ModernDarkTheme.SUCCESS_COLOR)
+        self._color_info = QColor(ModernDarkTheme.INFO_COLOR)
+
+    def set_repositories(self, repos):
+        self.beginResetModel()
+        self._repos = repos
+        self.endResetModel()
+
+    def rowCount(self, parent=QModelIndex()):
+        if parent.isValid():
+            return 0
+        return len(self._repos)
+
+    def columnCount(self, parent=QModelIndex()):
+        if parent.isValid():
+            return 0
+        return 5
+
+    def headerData(self, section, orientation, role=Qt.DisplayRole):
+        if role != Qt.DisplayRole:
+            return None
+        if orientation == Qt.Horizontal:
+            return self.HEADERS[section]
+        return str(section + 1)
+
+    def data(self, index, role=Qt.DisplayRole):
+        if not index.isValid():
+            return None
+        repo = self._repos[index.row()]
+        col = index.column()
+
+        if role == Qt.DisplayRole:
+            if col == 0:
+                return str(index.row() + 1)
+            elif col == 1:
+                return repo.get('name', 'Unknown')
+            elif col == 2:
+                return "🔒 Private" if repo.get('private', False) else "🌍 Public"
+            elif col == 3:
+                size_mb = repo.get('size', 0) / 1024
+                return f"{size_mb:.2f} MB"
+            elif col == 4:
+                return "📁 Local" if repo.get('local_exists', False) else "🌐 Remote"
+
+        elif role == Qt.TextAlignmentRole:
+            if col in (0, 3):
+                return Qt.AlignCenter | Qt.AlignVCenter
+            return Qt.AlignLeft | Qt.AlignVCenter
+
+        elif role == Qt.ForegroundRole:
+            if col == 2:
+                return QBrush(self._color_private if repo.get('private', False) else self._color_public)
+            if col == 4 and not repo.get('local_exists', False):
+                return QBrush(self._color_info)
+
+        return None
+
+    def get_repo(self, row):
+        if 0 <= row < len(self._repos):
+            return self._repos[row]
+        return None
+
+    def update_row(self, row):
+        if 0 <= row < len(self._repos):
+            left = self.index(row, 0)
+            right = self.index(row, 4)
+            self.dataChanged.emit(left, right)
 
 
 class RepoTable(QWidget):
@@ -22,6 +98,7 @@ class RepoTable(QWidget):
         super().__init__(parent)
         self.repositories = []
         self.filtered_repositories = []
+        self._updating = False
         self.setup_ui()
 
     def setup_ui(self):
@@ -40,7 +117,12 @@ class RepoTable(QWidget):
         self.search_input = QLineEdit()
         self.search_input.setPlaceholderText("Search by name...")
         self.search_input.setMinimumWidth(200)
-        self.search_input.textChanged.connect(self.apply_filters)
+
+        self._search_timer = QTimer(self)
+        self._search_timer.setSingleShot(True)
+        self._search_timer.setInterval(150)
+        self._search_timer.timeout.connect(self.apply_filters)
+        self.search_input.textChanged.connect(lambda _: self._search_timer.start())
 
         filter_label = QLabel("Filter:")
         filter_label.setStyleSheet(f"color: {ModernDarkTheme.TEXT_SECONDARY}; font-size: 11px;")
@@ -57,12 +139,36 @@ class RepoTable(QWidget):
 
         layout.addWidget(control_widget)
 
-        self.table = QTableWidget()
-        self.table.setColumnCount(5)
-        self.table.setHorizontalHeaderLabels(["#", "Repository", "Type", "Size", "Status"])
+        self.model = RepoTableModel(self)
+
+        self.table = QTableView()
+        self.table.setModel(self.model)
         self.table.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.table.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.table.verticalHeader().setVisible(False)
+        self.table.setShowGrid(True)
+        self.table.setAlternatingRowColors(True)
+        self.table.setStyleSheet(f"""
+            QTableView {{
+                background-color: {ModernDarkTheme.CARD_BG};
+                alternate-background-color: {ModernDarkTheme.ROW_ODD};
+                gridline-color: {ModernDarkTheme.BORDER_COLOR};
+                color: {ModernDarkTheme.TEXT_PRIMARY};
+                selection-background-color: {ModernDarkTheme.ROW_SELECTED};
+                selection-color: {ModernDarkTheme.TEXT_PRIMARY};
+            }}
+            QTableView::item {{
+                padding: 4px 6px;
+            }}
+            QHeaderView::section {{
+                background-color: {ModernDarkTheme.CARD_BG};
+                color: {ModernDarkTheme.TEXT_PRIMARY};
+                border: none;
+                border-bottom: 1px solid {ModernDarkTheme.BORDER_COLOR};
+                padding: 6px;
+            }}
+        """)
         self.table.doubleClicked.connect(self.on_double_click)
         self.table.setContextMenuPolicy(Qt.CustomContextMenu)
         self.table.customContextMenuRequested.connect(self.show_context_menu)
@@ -93,91 +199,59 @@ class RepoTable(QWidget):
         self.apply_filters()
 
     def apply_filters(self):
-        search_text = self.search_input.text().lower()
-        filter_type = self.filter_combo.currentText()
-
-        filtered = []
-        for repo in self.repositories:
-            if search_text and search_text not in repo.get('name', '').lower():
-                continue
-
-            if filter_type == "Public" and repo.get('private', False):
-                continue
-            elif filter_type == "Private" and not repo.get('private', False):
-                continue
-            elif filter_type == "Forks" and not repo.get('fork', False):
-                continue
-            elif filter_type == "Local" and not repo.get('local_exists', False):
-                continue
-            elif filter_type == "Remote" and repo.get('local_exists', False):
-                continue
-
-            filtered.append(repo)
-
-        self.filtered_repositories = filtered
-        self.update_table()
-
-    def update_table(self):
-        self.table.setUpdatesEnabled(False)
+        if self._updating:
+            return
+        self._updating = True
         try:
-            self.table.setRowCount(len(self.filtered_repositories))
+            search_text = self.search_input.text().strip().lower()
+            filter_type = self.filter_combo.currentText()
 
-            for i, repo in enumerate(self.filtered_repositories):
-                num_item = QTableWidgetItem(str(i + 1))
-                num_item.setTextAlignment(Qt.AlignCenter)
-                self.table.setItem(i, 0, num_item)
+            filtered = []
+            private_count = 0
+            local_count = 0
 
-                name_item = QTableWidgetItem(repo.get('name', 'Unknown'))
-                self.table.setItem(i, 1, name_item)
+            for repo in self.repositories:
+                if search_text and search_text not in repo.get('name', '').lower():
+                    continue
+                if filter_type == "Public" and repo.get('private', False):
+                    continue
+                elif filter_type == "Private" and not repo.get('private', False):
+                    continue
+                elif filter_type == "Forks" and not repo.get('fork', False):
+                    continue
+                elif filter_type == "Local" and not repo.get('local_exists', False):
+                    continue
+                elif filter_type == "Remote" and repo.get('local_exists', False):
+                    continue
 
-                is_private = repo.get('private', False)
-                type_text = "🔒 Private" if is_private else "🌍 Public"
-                type_item = QTableWidgetItem(type_text)
-                if is_private:
-                    type_item.setForeground(QBrush(QColor(ModernDarkTheme.WARNING_COLOR)))
-                else:
-                    type_item.setForeground(QBrush(QColor(ModernDarkTheme.SUCCESS_COLOR)))
-                self.table.setItem(i, 2, type_item)
+                filtered.append(repo)
+                if repo.get('private', False):
+                    private_count += 1
+                if repo.get('local_exists', False):
+                    local_count += 1
 
-                size_mb = repo.get('size', 0) / 1024
-                size_item = QTableWidgetItem(f"{size_mb:.2f} MB")
-                size_item.setTextAlignment(Qt.AlignRight)
-                self.table.setItem(i, 3, size_item)
+            self.filtered_repositories = filtered
+            self.model.set_repositories(filtered)
 
-                local_exists = self._check_local_exists(repo.get('name', ''))
-                status_text = "📁 Local" if local_exists else "🌐 Remote"
-                status_item = QTableWidgetItem(status_text)
-                if not local_exists:
-                    status_item.setForeground(QBrush(QColor(ModernDarkTheme.INFO_COLOR)))
-                self.table.setItem(i, 4, status_item)
+            self.stats_label.setText(
+                f"Total: {len(filtered)} | Private: {private_count} | Local: {local_count}"
+            )
         finally:
-            self.table.setUpdatesEnabled(True)
-
-        total = len(self.filtered_repositories)
-        private_count = sum(1 for r in self.filtered_repositories if r.get('private', False))
-        local_count = sum(1 for r in self.filtered_repositories
-                          if self._check_local_exists(r.get('name', '')))
-
-        self.stats_label.setText(
-            f"Total: {total} | Private: {private_count} | Local: {local_count}"
-        )
-
-    def _check_local_exists(self, repo_name: str) -> bool:
-        return False
-
-    def set_local_checker(self, checker_func):
-        self._check_local_exists = checker_func
+            self._updating = False
 
     def on_double_click(self, index):
-        row = index.row()
-        if 0 <= row < len(self.filtered_repositories):
-            self.repo_double_clicked.emit(self.filtered_repositories[row])
+        repo = self.model.get_repo(index.row())
+        if repo is not None:
+            self.repo_double_clicked.emit(repo)
 
     def get_selected_repositories(self) -> list:
-        selected_rows = set()
-        for item in self.table.selectedItems():
-            selected_rows.add(item.row())
-        return [self.filtered_repositories[row] for row in selected_rows]
+        rows = sorted({idx.row() for idx in self.table.selectionModel().selectedRows()})
+        result = []
+        for row in rows:
+            repo = self.model.get_repo(row)
+            if repo is not None:
+                result.append(repo)
+        return result
 
     def show_context_menu(self, position):
         selected = self.get_selected_repositories()
@@ -196,7 +270,7 @@ class RepoTable(QWidget):
         reclone_action.triggered.connect(lambda checked, repos=selected: self.reclone_selected.emit(repos))
         menu.addAction(reclone_action)
 
-        local_repos = [r for r in selected if self._check_local_exists(r.get('name', ''))]
+        local_repos = [r for r in selected if r.get('local_exists', False)]
         if local_repos:
             delete_action = QAction(f"🗑️ Delete Local ({len(local_repos)})", self)
             delete_action.setToolTip("Remove local repository folder")
@@ -208,7 +282,7 @@ class RepoTable(QWidget):
         if len(selected) == 1:
             repo = selected[0]
             repo_name = repo.get('name', 'Unknown')
-            local_exists = self._check_local_exists(repo_name)
+            local_exists = bool(repo.get('local_exists', False))
             repo_url = repo.get('html_url', repo.get('clone_url', ''))
 
             if local_exists:
@@ -235,12 +309,8 @@ class RepoTable(QWidget):
         self.stats_label.setText(f"Total: {total} | Private: {private_count} | Local: {local_count}")
 
     def update_repo_status(self, repo_name: str, local_exists: bool):
-        for i, repo in enumerate(self.filtered_repositories):
+        for row, repo in enumerate(self.filtered_repositories):
             if repo.get('name') == repo_name:
                 repo['local_exists'] = local_exists
-                status_text = "📁 Local" if local_exists else "🌐 Remote"
-                status_item = QTableWidgetItem(status_text)
-                if not local_exists:
-                    status_item.setForeground(QBrush(QColor(ModernDarkTheme.INFO_COLOR)))
-                self.table.setItem(i, 4, status_item)
+                self.model.update_row(row)
                 break

@@ -83,6 +83,7 @@ class MainWindow(QMainWindow):
         self.client = None
         self.sync_manager = None
         self.repositories = []
+        self._repos_by_name = {}
         self.user_info = None
         self.load_worker = None
         self.preloader_dialog = None
@@ -113,7 +114,6 @@ class MainWindow(QMainWindow):
         main_layout.addWidget(self.info_panel)
 
         self.repo_table = RepoTable()
-        self.repo_table.set_local_checker(self.check_local_exists)
         self.repo_table.repo_double_clicked.connect(self.on_repo_double_click)
         self.repo_table.sync_selected.connect(self.sync_selected)
         self.repo_table.reclone_selected.connect(self.reclone_selected)
@@ -539,6 +539,7 @@ class MainWindow(QMainWindow):
         self.auth = auth
         self.client = client
         self.repositories = repositories
+        self._repos_by_name = {r.get('name'): r for r in repositories}
         self.user_info = {"login": auth.username}
         self.sync_manager = GUISyncManager(auth)
 
@@ -573,18 +574,12 @@ class MainWindow(QMainWindow):
         self.status_icon.setText("🟢")
         self.status_icon.setStyleSheet(f"color: {ModernDarkTheme.SUCCESS_COLOR}; font-size: 14px;")
 
-    def check_local_exists(self, repo_name: str) -> bool:
-        if not self.sync_manager:
-            return False
-        return self.sync_manager.repo_exists_locally(repo_name)
-
     def update_repo_status_in_table(self, repo_name: str, local_exists: bool):
-        for repo in self.repositories:
-            if repo.get('name') == repo_name:
-                repo['local_exists'] = local_exists
-                break
+        repo = self._repos_by_name.get(repo_name)
+        if repo is not None:
+            repo['local_exists'] = local_exists
+
         self.repo_table.update_repo_status(repo_name, local_exists)
-        self.update_repo_stats()
 
     def sync_all(self):
         if not self.sync_manager or not self.repositories:
@@ -593,6 +588,8 @@ class MainWindow(QMainWindow):
         dialog = SyncDialog(self.sync_manager, self.repositories, "sync", self)
         dialog.repo_status_updated.connect(self.update_repo_status_in_table)
         dialog.exec_()
+        self.update_repo_stats()
+        self.repo_table.apply_filters()
 
     def update_only(self):
         if not self.sync_manager or not self.repositories:
@@ -600,7 +597,7 @@ class MainWindow(QMainWindow):
 
         repos_to_update = [
             r for r in self.repositories
-            if self.check_local_exists(r.get('name', ''))
+            if r.get('local_exists', False)
         ]
 
         if not repos_to_update:
@@ -610,6 +607,8 @@ class MainWindow(QMainWindow):
         dialog = SyncDialog(self.sync_manager, repos_to_update, "sync", self)
         dialog.repo_status_updated.connect(self.update_repo_status_in_table)
         dialog.exec_()
+        self.update_repo_stats()
+        self.repo_table.apply_filters()
 
     def sync_selected(self, repositories: list):
         if not repositories:
@@ -617,6 +616,8 @@ class MainWindow(QMainWindow):
         dialog = SyncDialog(self.sync_manager, repositories, "sync", self)
         dialog.repo_status_updated.connect(self.update_repo_status_in_table)
         dialog.exec_()
+        self.update_repo_stats()
+        self.repo_table.apply_filters()
 
     def reclone_selected(self, repositories: list):
         if not repositories:
@@ -634,6 +635,8 @@ class MainWindow(QMainWindow):
             dialog = SyncDialog(self.sync_manager, repositories, "reclone", self)
             dialog.repo_status_updated.connect(self.update_repo_status_in_table)
             dialog.exec_()
+            self.update_repo_stats()
+            self.repo_table.apply_filters()
 
     def reclone_all(self):
         if not self.repositories:
@@ -652,6 +655,8 @@ class MainWindow(QMainWindow):
             dialog = SyncDialog(self.sync_manager, self.repositories, "reclone", self)
             dialog.repo_status_updated.connect(self.update_repo_status_in_table)
             dialog.exec_()
+            self.update_repo_stats()
+            self.repo_table.apply_filters()
 
     def open_local_folder(self, repo_name: str):
         if not self.sync_manager:
@@ -673,7 +678,7 @@ class MainWindow(QMainWindow):
 
     def on_repo_double_click(self, repo: dict):
         repo_name = repo.get('name', 'Unknown')
-        local_exists = self.check_local_exists(repo_name)
+        local_exists = bool(repo.get('local_exists', False))
 
         dialog = QDialog(self)
         dialog.setWindowTitle(f"Repository: {repo_name}")
@@ -899,13 +904,15 @@ class MainWindow(QMainWindow):
                     print(f"Error deleting {repo_name}: {e}")
 
         if deleted_count > 0:
+            self.update_repo_stats()
+            self.repo_table.apply_filters()
             QMessageBox.information(self, "Success", f"Deleted {deleted_count} local copies")
 
     def delete_all_repositories(self):
         if not self.sync_manager or not self.repositories:
             return
 
-        local_repos = [r for r in self.repositories if self.check_local_exists(r.get('name', ''))]
+        local_repos = [r for r in self.repositories if r.get('local_exists', False)]
 
         if not local_repos:
             QMessageBox.information(self, "Info", "No local repositories to delete")
@@ -928,6 +935,8 @@ class MainWindow(QMainWindow):
             dialog = DeleteAllDialog(self.sync_manager, local_repos, self)
             dialog.repo_status_updated.connect(self.update_repo_status_in_table)
             dialog.exec_()
+            self.update_repo_stats()
+            self.repo_table.apply_filters()
 
     def _calculate_total_size(self, repositories: list) -> str:
         total_size = 0
