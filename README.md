@@ -246,9 +246,9 @@ Configuration is stored in `~/forgejo-sync-manager/config.json`
 - **Repository Table**: List of all repositories with columns:
   - `#` - Index number
   - `Repository` - Repository name
-  - `Type` - Public 🔒 or Private 🌍
+  - `Type` - Public or Private
   - `Size` - Repository size in MB
-  - `Status` - Local 📁 or Remote 🌐
+  - `Status` - Local or Remote
 - **Search & Filter**: Search by name, filter by Public/Private/Forks/Local/Remote
 - **Action Buttons**:
   - `Sync All` - Clone missing repositories and update all local copies

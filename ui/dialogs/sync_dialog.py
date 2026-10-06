@@ -157,11 +157,11 @@ class SyncDialog(QDialog):
         self.current_label.setText(f"Processing: {repo_name}")
 
         status_icon = {
-            "CLONED": "✅",
-            "UPDATED": "🔄",
-            "RECLONED": "⚠️",
-            "FAILED": "❌"
-        }.get(status, "❓")
+            "CLONED": "[CLONE]",
+            "UPDATED": "[UPDATE]",
+            "RECLONED": "[RECLONE]",
+            "FAILED": "[FAIL]"
+        }.get(status, "[?]")
 
         timestamp = datetime.now().strftime("%H:%M:%S")
         self.log_text.append(f"[{timestamp}] {status_icon} {repo_name}: {status}")
@@ -181,14 +181,14 @@ class SyncDialog(QDialog):
 
         self.log_text.append("\n" + "=" * 50)
         self.log_text.append("SUMMARY:")
-        self.log_text.append(f"  ✅ Cloned: {results['cloned']}")
-        self.log_text.append(f"  🔄 Updated: {results['updated']}")
-        self.log_text.append(f"  ⚠️ Recloned: {results['recloned']}")
-        self.log_text.append(f"  ❌ Failed: {results['failed']}")
+        self.log_text.append(f"  [CLONE] Cloned: {results['cloned']}")
+        self.log_text.append(f"  [UPDATE] Updated: {results['updated']}")
+        self.log_text.append(f"  [RECLONE] Recloned: {results['recloned']}")
+        self.log_text.append(f"  [FAIL] Failed: {results['failed']}")
         self.log_text.append("=" * 50)
 
     def on_error(self, error_msg: str):
-        self.log_text.append(f"\n❌ ERROR: {error_msg}")
+        self.log_text.append(f"\n[ERROR] {error_msg}")
 
     def cancel_sync(self):
         if self.worker and self.worker.isRunning():

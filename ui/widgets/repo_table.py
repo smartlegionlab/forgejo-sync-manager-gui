@@ -7,6 +7,7 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt, pyqtSignal, QTimer, QAbstractTableModel, QModelIndex
 from PyQt5.QtGui import QColor, QBrush
 
+from ui.icons import icon, Icons
 from ui.theme import ModernDarkTheme
 
 
@@ -54,12 +55,18 @@ class RepoTableModel(QAbstractTableModel):
             elif col == 1:
                 return repo.get('name', 'Unknown')
             elif col == 2:
-                return "🔒 Private" if repo.get('private', False) else "🌍 Public"
+                return "Private" if repo.get('private', False) else "Public"
             elif col == 3:
                 size_mb = repo.get('size', 0) / 1024
                 return f"{size_mb:.2f} MB"
             elif col == 4:
-                return "📁 Local" if repo.get('local_exists', False) else "🌐 Remote"
+                return "Local" if repo.get('local_exists', False) else "Remote"
+
+        elif role == Qt.DecorationRole:
+            if col == 2:
+                return icon(Icons.PRIVATE if repo.get('private', False) else Icons.PUBLIC)
+            if col == 4:
+                return icon(Icons.LOCAL if repo.get('local_exists', False) else Icons.REMOTE)
 
         elif role == Qt.TextAlignmentRole:
             if col in (0, 3):
@@ -256,7 +263,7 @@ class RepoTable(QWidget):
             self.stats_label.setText(
                 f"Total: {len(filtered)} | Private: {private_count} | "
             )
-            self.local_link.setText(f"📁 Local: {local_count}")
+            self.local_link.setText(f"Local: {local_count}")
         finally:
             self._updating = False
 
@@ -281,19 +288,19 @@ class RepoTable(QWidget):
 
         menu = QMenu(self.table)
 
-        sync_action = QAction(f"🔄 Sync ({len(selected)})", self)
+        sync_action = QAction(icon(Icons.SYNC), f"Sync ({len(selected)})", self)
         sync_action.setToolTip("Clone if missing, update if exists")
         sync_action.triggered.connect(lambda checked, repos=selected: self.sync_selected.emit(repos))
         menu.addAction(sync_action)
 
-        reclone_action = QAction(f"⚠️ Re-clone ({len(selected)})", self)
+        reclone_action = QAction(icon(Icons.RECLONE), f"Re-clone ({len(selected)})", self)
         reclone_action.setToolTip("Delete local copy and clone again")
         reclone_action.triggered.connect(lambda checked, repos=selected: self.reclone_selected.emit(repos))
         menu.addAction(reclone_action)
 
         local_repos = [r for r in selected if r.get('local_exists', False)]
         if local_repos:
-            delete_action = QAction(f"🗑️ Delete Local ({len(local_repos)})", self)
+            delete_action = QAction(icon(Icons.DELETE), f"Delete Local ({len(local_repos)})", self)
             delete_action.setToolTip("Remove local repository folder")
             delete_action.triggered.connect(lambda checked, repos=local_repos: self.delete_selected.emit(repos))
             menu.addAction(delete_action)
@@ -307,20 +314,20 @@ class RepoTable(QWidget):
             repo_url = repo.get('html_url', repo.get('clone_url', ''))
 
             if local_exists:
-                open_folder_action = QAction("📂 Open Local Folder", self)
+                open_folder_action = QAction(icon(Icons.FOLDER_OPEN), "Open Local Folder", self)
                 open_folder_action.setToolTip("Open repository folder in file manager")
                 open_folder_action.triggered.connect(
                     lambda checked, name=repo_name: self.open_folder_selected.emit(name))
                 menu.addAction(open_folder_action)
 
             if repo_url:
-                open_browser_action = QAction("🌐 Open in Browser", self)
+                open_browser_action = QAction(icon(Icons.EXTERNAL), "Open in Browser", self)
                 open_browser_action.setToolTip("Open repository on Forgejo web interface")
                 open_browser_action.triggered.connect(
                     lambda checked, url=repo_url: self.open_browser_selected.emit(url))
                 menu.addAction(open_browser_action)
         else:
-            stats_action = QAction(f"📊 {len(selected)} repositories selected", self)
+            stats_action = QAction(icon(Icons.LIST), f" {len(selected)} repositories selected", self)
             stats_action.setEnabled(False)
             menu.addAction(stats_action)
 
@@ -328,7 +335,7 @@ class RepoTable(QWidget):
 
     def update_stats(self, total: int, private_count: int, local_count: int):
         self.stats_label.setText(f"Total: {total} | Private: {private_count} | ")
-        self.local_link.setText(f"📁 Local: {local_count}")
+        self.local_link.setText(f"Local: {local_count}")
 
     def update_repo_status(self, repo_name: str, local_exists: bool):
         for row, repo in enumerate(self.filtered_repositories):

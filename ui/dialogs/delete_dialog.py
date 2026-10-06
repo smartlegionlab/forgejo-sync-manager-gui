@@ -145,10 +145,10 @@ class DeleteAllDialog(QDialog):
         self.current_label.setText(f"Deleting: {repo_name}")
 
         status_icon = {
-            "DELETED": "🗑️",
-            "NOT_FOUND": "⚠️",
-            "ERROR": "❌"
-        }.get(status, "❓")
+            "DELETED": "[DELETED]",
+            "NOT_FOUND": "[NOT FOUND]",
+            "ERROR": "[ERROR]"
+        }.get(status, "[?]")
 
         timestamp = datetime.now().strftime("%H:%M:%S")
         self.log_text.append(f"[{timestamp}] {status_icon} {repo_name}: {status}")
@@ -168,13 +168,13 @@ class DeleteAllDialog(QDialog):
 
         self.log_text.append("\n" + "=" * 50)
         self.log_text.append("SUMMARY:")
-        self.log_text.append(f"  🗑️ Deleted: {results['deleted']}")
-        self.log_text.append(f"  ⚠️ Not Found: {results['not_found']}")
-        self.log_text.append(f"  ❌ Failed: {results['failed']}")
+        self.log_text.append(f"  Deleted: {results['deleted']}")
+        self.log_text.append(f"  Not Found: {results['not_found']}")
+        self.log_text.append(f"  Failed: {results['failed']}")
         self.log_text.append("=" * 50)
 
     def on_error(self, error_msg: str):
-        self.log_text.append(f"\n❌ ERROR: {error_msg}")
+        self.log_text.append(f"\n[ERROR] {error_msg}")
 
     def cancel_delete(self):
         if self.worker and self.worker.isRunning():

@@ -16,6 +16,7 @@ from forgejo_sync_manager_core.core.auth import ForgejoAuth
 from forgejo_sync_manager_core.core.api_client import ForgejoAPIClient
 from forgejo_sync_manager_core.core.sync_manager_gui import GUISyncManager
 
+from ui.icons import icon, Icons
 from ui.theme import ModernDarkTheme
 from ui.widgets.repo_table import RepoTable
 from ui.dialogs.setup_dialog import SetupDialog
@@ -175,11 +176,19 @@ class MainWindow(QMainWindow):
         left_layout.setContentsMargins(0, 0, 0, 0)
         left_layout.setSpacing(10)
 
-        self.status_icon = QLabel("⚫")
-        self.status_icon.setStyleSheet(f"color: {ModernDarkTheme.ERROR_COLOR}; font-size: 14px;")
+        self.status_icon = QLabel("")
+        self.status_icon.setFixedSize(12, 12)
+        self.status_icon.setStyleSheet(
+            f"background-color: {ModernDarkTheme.ERROR_COLOR}; border-radius: 6px;"
+        )
         left_layout.addWidget(self.status_icon)
 
-        self.user_label = QLabel("👤 Not connected")
+        user_icon = QLabel()
+        user_icon.setPixmap(icon(Icons.USER).pixmap(14, 14))
+        user_icon.setFixedSize(14, 14)
+        left_layout.addWidget(user_icon)
+
+        self.user_label = QLabel("User not connected")
         self.user_label.setStyleSheet(f"""
             QLabel {{
                 color: {ModernDarkTheme.PRIMARY_COLOR};
@@ -199,8 +208,9 @@ class MainWindow(QMainWindow):
         center_layout.setContentsMargins(0, 0, 0, 0)
         center_layout.setSpacing(8)
 
-        server_icon = QLabel("🌐")
-        server_icon.setStyleSheet("font-size: 12px;")
+        server_icon = QLabel()
+        server_icon.setPixmap(icon(Icons.SERVER).pixmap(14, 14))
+        server_icon.setFixedSize(14, 14)
         center_layout.addWidget(server_icon)
 
         self.server_label = QLabel("")
@@ -266,21 +276,21 @@ class MainWindow(QMainWindow):
         info_layout = QVBoxLayout()
         info_layout.setSpacing(8)
 
-        server_info = QLabel(f"🌐 Server: {self.auth.server_url}")
+        server_info = QLabel(f"Server: {self.auth.server_url}")
         server_info.setStyleSheet(f"color: {ModernDarkTheme.TEXT_PRIMARY}; font-size: 12px;")
         info_layout.addWidget(server_info)
 
-        repos_count = QLabel(f"📚 Repositories: {len(self.repositories)}")
+        repos_count = QLabel(f"Repositories: {len(self.repositories)}")
         repos_count.setStyleSheet(f"color: {ModernDarkTheme.TEXT_PRIMARY}; font-size: 12px;")
         info_layout.addWidget(repos_count)
 
         private_count = sum(1 for r in self.repositories if r.get('private', False))
-        private_info = QLabel(f"🔒 Private: {private_count}")
+        private_info = QLabel(f"Private: {private_count}")
         private_info.setStyleSheet(f"color: {ModernDarkTheme.TEXT_PRIMARY}; font-size: 12px;")
         info_layout.addWidget(private_info)
 
         local_count = sum(1 for r in self.repositories if r.get('local_exists', False))
-        local_info = QLabel(f"📁 Local: {local_count}")
+        local_info = QLabel(f"Local: {local_count}")
         local_info.setStyleSheet(f"color: {ModernDarkTheme.TEXT_PRIMARY}; font-size: 12px;")
         info_layout.addWidget(local_info)
 
@@ -310,22 +320,22 @@ class MainWindow(QMainWindow):
         layout = QHBoxLayout(widget)
         layout.setSpacing(10)
 
-        self.sync_btn = QPushButton("🔄 Sync All")
+        self.sync_btn = QPushButton(icon(Icons.SYNC), " Sync All")
         self.sync_btn.clicked.connect(self.sync_all)
         self.sync_btn.setEnabled(False)
         self.sync_btn.setToolTip("Clone missing repositories and update all local copies")
 
-        self.update_btn = QPushButton("📥 Update Only")
+        self.update_btn = QPushButton(icon(Icons.UPDATE), " Update Only")
         self.update_btn.clicked.connect(self.update_only)
         self.update_btn.setEnabled(False)
         self.update_btn.setToolTip("Update only already cloned repositories (no new clones)")
 
-        self.reclone_btn = QPushButton("⚠️ Re-clone All")
+        self.reclone_btn = QPushButton(icon(Icons.RECLONE), " Re-clone All")
         self.reclone_btn.clicked.connect(self.reclone_all)
         self.reclone_btn.setEnabled(False)
         self.reclone_btn.setToolTip("Delete all local copies and clone again from server")
 
-        self.delete_all_btn = QPushButton("🗑️ Delete All")
+        self.delete_all_btn = QPushButton(icon(Icons.DELETE), " Delete All")
         self.delete_all_btn.clicked.connect(self.delete_all_repositories)
         self.delete_all_btn.setEnabled(False)
         self.delete_all_btn.setToolTip("Delete ALL local repository copies")
@@ -361,22 +371,22 @@ class MainWindow(QMainWindow):
 
         file_menu = menubar.addMenu("&File")
 
-        sync_action = QAction("&Sync All", self)
+        sync_action = QAction(icon(Icons.SYNC), "&Sync All", self)
         sync_action.setShortcut(QKeySequence("Ctrl+Shift+S"))
         sync_action.triggered.connect(self.sync_all)
         file_menu.addAction(sync_action)
 
-        update_action = QAction("&Update Only", self)
+        update_action = QAction(icon(Icons.UPDATE), "&Update Only", self)
         update_action.setShortcut(QKeySequence("Ctrl+Shift+U"))
         update_action.triggered.connect(self.update_only)
         file_menu.addAction(update_action)
 
-        reclone_action = QAction("&Re-clone All", self)
+        reclone_action = QAction(icon(Icons.RECLONE), "&Re-clone All", self)
         reclone_action.setShortcut(QKeySequence("Ctrl+Shift+R"))
         reclone_action.triggered.connect(self.reclone_all)
         file_menu.addAction(reclone_action)
 
-        delete_all_action = QAction("&Delete All Repositories", self)
+        delete_all_action = QAction(icon(Icons.DELETE), "&Delete All Repositories", self)
         delete_all_action.setShortcut(QKeySequence("Ctrl+Shift+D"))
         delete_all_action.triggered.connect(self.delete_all_repositories)
         file_menu.addAction(delete_all_action)
@@ -566,14 +576,15 @@ class MainWindow(QMainWindow):
         total = len(self.repositories)
         private_count = sum(1 for r in self.repositories if r.get('private', False))
         local_count = sum(1 for r in self.repositories if r.get('local_exists', False))
-        self.stats_label.setText(f"📊 Total: {total} | 🔒 Private: {private_count} | 📁 Local: {local_count}")
+        self.stats_label.setText(f"Total: {total} | Private: {private_count} | Local: {local_count}")
         self.repo_table.update_stats(total, private_count, local_count)
 
     def update_info_panel(self):
-        self.user_label.setText(f"👤 @{self.auth.username}")
+        self.user_label.setText(f"@{self.auth.username}")
         self.server_label.setText(self.auth.server_url)
-        self.status_icon.setText("🟢")
-        self.status_icon.setStyleSheet(f"color: {ModernDarkTheme.SUCCESS_COLOR}; font-size: 14px;")
+        self.status_icon.setStyleSheet(
+            f"background-color: {ModernDarkTheme.SUCCESS_COLOR}; border-radius: 6px;"
+        )
 
     def update_repo_status_in_table(self, repo_name: str, local_exists: bool):
         repo = self._repos_by_name.get(repo_name)
@@ -829,8 +840,10 @@ class MainWindow(QMainWindow):
         layout.setContentsMargins(25, 25, 25, 25)
         layout.setSpacing(15)
 
-        self.loading_label = QLabel("⏳")
-        self.loading_label.setStyleSheet("font-size: 40px;")
+        self.loading_label = QLabel(".")
+        self.loading_label.setStyleSheet(
+            f"color: {ModernDarkTheme.PRIMARY_COLOR}; font-size: 32px; font-weight: bold;"
+        )
         self.loading_label.setAlignment(Qt.AlignCenter)
         layout.addWidget(self.loading_label)
 
@@ -870,7 +883,7 @@ class MainWindow(QMainWindow):
         QApplication.processEvents()
 
     def animate_loading(self):
-        frames = ["⏳", "⌛", "⏳", "⌛"]
+        frames = [".", "..", "...", ".."]
         self.animation_counter = (self.animation_counter + 1) % len(frames)
         if hasattr(self, 'loading_label') and self.loading_label:
             self.loading_label.setText(frames[self.animation_counter])
@@ -939,11 +952,11 @@ class MainWindow(QMainWindow):
 
         reply = QMessageBox.warning(
             self,
-            "⚠️ Confirm Delete All",
+            "Confirm Delete All",
             f"DELETE ALL LOCAL REPOSITORIES?\n\n"
-            f"📁 Local copies to delete: {len(local_repos)} repositories\n"
-            f"💾 Total disk space: {self._calculate_total_size(local_repos)}\n\n"
-            f"⚠️ This action CANNOT BE UNDONE!\n"
+            f"Local copies to delete: {len(local_repos)} repositories\n"
+            f"Total disk space: {self._calculate_total_size(local_repos)}\n\n"
+            f"This action CANNOT BE UNDONE!\n"
             f"All local changes will be lost permanently.",
             QMessageBox.Yes | QMessageBox.No,
             QMessageBox.No
