@@ -92,7 +92,7 @@ class MainWindow(QMainWindow):
         self.animation_counter = 0
 
         self.setWindowTitle(f"{ConfigManager.APP_FULL_NAME}")
-        self.setMinimumSize(800, 600)
+        self.setMinimumSize(640, 480)
 
         self.setup_ui()
         self.setup_menu()
@@ -227,13 +227,9 @@ class MainWindow(QMainWindow):
         self.server_label.mousePressEvent = self.on_server_click
         center_layout.addWidget(self.server_label)
 
-        self.stats_label = QLabel("")
-        self.stats_label.setStyleSheet(f"color: {ModernDarkTheme.TEXT_SECONDARY}; font-size: 11px;")
-
         layout.addWidget(left_widget)
         layout.addWidget(center_widget)
         layout.addStretch()
-        layout.addWidget(self.stats_label)
 
         return widget
 
@@ -576,7 +572,6 @@ class MainWindow(QMainWindow):
         total = len(self.repositories)
         private_count = sum(1 for r in self.repositories if r.get('private', False))
         local_count = sum(1 for r in self.repositories if r.get('local_exists', False))
-        self.stats_label.setText(f"Total: {total} | Private: {private_count} | Local: {local_count}")
         self.repo_table.update_stats(total, private_count, local_count)
 
     def update_info_panel(self):

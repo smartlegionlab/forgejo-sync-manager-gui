@@ -195,10 +195,40 @@ class RepoTable(QWidget):
         status_layout.setContentsMargins(10, 5, 10, 5)
         status_layout.setSpacing(6)
 
-        self.stats_label = QLabel("")
-        self.stats_label.setStyleSheet(f"color: {ModernDarkTheme.TEXT_SECONDARY}; font-size: 11px;")
+        stats_style = f"color: {ModernDarkTheme.TEXT_SECONDARY}; font-size: 11px;"
 
-        self.local_link = QLabel("")
+        total_icon = QLabel()
+        total_icon.setPixmap(icon(Icons.REPOS).pixmap(12, 12))
+        total_icon.setFixedSize(12, 12)
+        status_layout.addWidget(total_icon)
+
+        self.total_label = QLabel("Total: 0")
+        self.total_label.setStyleSheet(stats_style)
+        status_layout.addWidget(self.total_label)
+
+        sep1 = QLabel("|")
+        sep1.setStyleSheet(stats_style)
+        status_layout.addWidget(sep1)
+
+        private_icon = QLabel()
+        private_icon.setPixmap(icon(Icons.PRIVATE).pixmap(12, 12))
+        private_icon.setFixedSize(12, 12)
+        status_layout.addWidget(private_icon)
+
+        self.private_label = QLabel("Private: 0")
+        self.private_label.setStyleSheet(stats_style)
+        status_layout.addWidget(self.private_label)
+
+        sep2 = QLabel("|")
+        sep2.setStyleSheet(stats_style)
+        status_layout.addWidget(sep2)
+
+        local_icon = QLabel()
+        local_icon.setPixmap(icon(Icons.LOCAL).pixmap(12, 12))
+        local_icon.setFixedSize(12, 12)
+        status_layout.addWidget(local_icon)
+
+        self.local_link = QLabel("Local: 0")
         self.local_link.setStyleSheet(f"""
             QLabel {{
                 color: {ModernDarkTheme.PRIMARY_COLOR};
@@ -211,9 +241,8 @@ class RepoTable(QWidget):
         """)
         self.local_link.setCursor(Qt.PointingHandCursor)
         self.local_link.mousePressEvent = self.on_local_link_click
-
-        status_layout.addWidget(self.stats_label)
         status_layout.addWidget(self.local_link)
+
         status_layout.addStretch()
 
         layout.addWidget(status_widget)
@@ -260,9 +289,8 @@ class RepoTable(QWidget):
             self.filtered_repositories = filtered
             self.model.set_repositories(filtered)
 
-            self.stats_label.setText(
-                f"Total: {len(filtered)} | Private: {private_count} | "
-            )
+            self.total_label.setText(f"Total: {len(filtered)}")
+            self.private_label.setText(f"Private: {private_count}")
             self.local_link.setText(f"Local: {local_count}")
         finally:
             self._updating = False
@@ -334,7 +362,8 @@ class RepoTable(QWidget):
         menu.exec_(self.table.viewport().mapToGlobal(position))
 
     def update_stats(self, total: int, private_count: int, local_count: int):
-        self.stats_label.setText(f"Total: {total} | Private: {private_count} | ")
+        self.total_label.setText(f"Total: {total}")
+        self.private_label.setText(f"Private: {private_count}")
         self.local_link.setText(f"Local: {local_count}")
 
     def update_repo_status(self, repo_name: str, local_exists: bool):
